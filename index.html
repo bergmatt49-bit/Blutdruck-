@@ -1,0 +1,12 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#1565c0"><title>Blutdruck</title>
+<style>body{margin:0;background:#f3f6fa;font-family:system-ui;color:#172033}header{background:#1565c0;color:#fff;padding:22px;text-align:center;font-size:26px;font-weight:700}main{max-width:600px;margin:auto;padding:16px}.card{background:#fff;padding:18px;border-radius:18px;margin-bottom:16px;box-shadow:0 2px 12px #0001}input,button{box-sizing:border-box;width:100%;padding:14px;margin:7px 0;border-radius:12px;font-size:18px}input{border:1px solid #ccd4df}button{border:0;background:#1565c0;color:#fff;font-weight:700}.secondary{background:#e7edf6;color:#26364a}.entry{padding:13px 0;border-bottom:1px solid #e5eaf0}.values{font-size:20px;font-weight:700}.date{color:#657287}</style></head>
+<body><header>🩺 Blutdruck</header><main><div class="card"><h2>Neue Messung</h2>
+<input id="s" type="number" inputmode="numeric" placeholder="Oberer Wert, z. B. 140"><input id="d" type="number" inputmode="numeric" placeholder="Unterer Wert, z. B. 80"><input id="p" type="number" inputmode="numeric" placeholder="Puls, z. B. 70"><button onclick="save()">Messung speichern</button></div>
+<div class="card"><h2>Gespeicherte Messungen</h2><div id="list"></div><button class="secondary" onclick="clearAll()">Alle Messungen löschen</button></div></main>
+<script>
+const K="blutdruck-v1",E=x=>document.getElementById(x);
+function get(){try{return JSON.parse(localStorage.getItem(K)||"[]")}catch(e){return[]}}
+function render(){let a=get();E("list").innerHTML=a.length?[...a].reverse().map(x=>`<div class="entry"><div class="values">${x.s} / ${x.d} mmHg &nbsp; ❤️ ${x.p}</div><div class="date">${x.t}</div></div>`).join(""):"Noch keine Messungen vorhanden."}
+function save(){let s=+E("s").value,d=+E("d").value,p=+E("p").value;if(!s||!d||!p){alert("Bitte alle drei Werte eingeben.");return}let a=get();a.push({s,d,p,t:new Date().toLocaleString("de-DE")});localStorage.setItem(K,JSON.stringify(a));E("s").value=E("d").value=E("p").value="";render()}
+function clearAll(){if(confirm("Wirklich alle Messungen löschen?")){localStorage.removeItem(K);render()}}render();
+</script></body></html>
