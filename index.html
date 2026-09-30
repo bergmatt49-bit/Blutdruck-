@@ -316,6 +316,7 @@
     <h2>📊 Durchschnitt</h2>
 
     <div class="period-buttons">
+
       <button
         id="period7"
         class="period-button"
@@ -336,6 +337,7 @@
         onclick="setAveragePeriod('all')">
         Alle
       </button>
+
     </div>
 
     <div
@@ -366,8 +368,10 @@
   <div class="card">
     <h2>📈 Blutdruck-Verlauf</h2>
 
-    <div id="bloodPressureEmpty" class="chart-empty">
-      Für das Diagramm werden mindestens 2 Messungen benötigt.
+    <div
+      id="bloodPressureEmpty"
+      class="chart-empty">
+      Für das Diagramm werden mindestens 2 Messungen im gewählten Zeitraum benötigt.
     </div>
 
     <div
@@ -396,8 +400,10 @@
   <div class="card">
     <h2>❤️ Puls-Verlauf</h2>
 
-    <div id="pulseEmpty" class="chart-empty">
-      Für das Diagramm werden mindestens 2 Messungen benötigt.
+    <div
+      id="pulseEmpty"
+      class="chart-empty">
+      Für das Diagramm werden mindestens 2 Messungen im gewählten Zeitraum benötigt.
     </div>
 
     <div
@@ -408,12 +414,13 @@
       <canvas id="pulseChart"></canvas>
 
       <div class="legend">
+
         <div class="legend-item">
           <span class="legend-line red"></span>
           Puls
         </div>
-      </div>
 
+      </div>
     </div>
   </div>
 
@@ -498,6 +505,29 @@
     return "🌃 Nachts";
   }
 
+  function getMeasurementsForPeriod(measurements) {
+    if (averagePeriod === "all") {
+      return measurements;
+    }
+
+    const cutoff =
+      new Date();
+
+    cutoff.setDate(
+      cutoff.getDate() -
+      Number(averagePeriod)
+    );
+
+    return measurements.filter(
+      function(measurement) {
+        return (
+          new Date(measurement.date) >=
+          cutoff
+        );
+      }
+    );
+  }
+
   function setAveragePeriod(period) {
     averagePeriod = period;
 
@@ -527,8 +557,15 @@
         .classList.add("active");
     }
 
-    updateAverage(
-      getMeasurements()
+    const measurements =
+      getMeasurements();
+
+    updateAverage(measurements);
+
+    drawCharts(
+      getMeasurementsForPeriod(
+        measurements
+      )
     );
   }
 
@@ -660,28 +697,10 @@
   }
 
   function updateAverage(measurements) {
-    let filteredMeasurements =
-      measurements;
-
-    if (averagePeriod !== "all") {
-      const cutoff =
-        new Date();
-
-      cutoff.setDate(
-        cutoff.getDate() -
-        Number(averagePeriod)
+    const filteredMeasurements =
+      getMeasurementsForPeriod(
+        measurements
       );
-
-      filteredMeasurements =
-        measurements.filter(
-          function(measurement) {
-            return (
-              new Date(measurement.date) >=
-              cutoff
-            );
-          }
-        );
-    }
 
     const averageInfo =
       document.getElementById(
@@ -1283,6 +1302,7 @@
           const valid =
             backup.measurements.every(
               function(measurement) {
+
                 const systolic =
                   Number(
                     measurement.systolic
@@ -1393,7 +1413,9 @@
     );
 
     drawCharts(
-      measurements
+      getMeasurementsForPeriod(
+        measurements
+      )
     );
 
     count.textContent =
@@ -1474,7 +1496,9 @@
     "resize",
     function() {
       drawCharts(
-        getMeasurements()
+        getMeasurementsForPeriod(
+          getMeasurements()
+        )
       );
     }
   );
