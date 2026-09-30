@@ -58,6 +58,11 @@
       margin-top: 0;
     }
 
+    .description {
+      color: #667085;
+      line-height: 1.5;
+    }
+
     input {
       width: 100%;
       padding: 15px;
@@ -76,18 +81,21 @@
       cursor: pointer;
     }
 
-    .save-button {
+    .primary-button {
       width: 100%;
       margin-top: 10px;
       background: #1565c0;
       color: white;
     }
 
-    .cancel-button {
+    .secondary-button {
       width: 100%;
       margin-top: 8px;
       background: #e7edf6;
       color: #172033;
+    }
+
+    #cancelButton {
       display: none;
     }
 
@@ -117,7 +125,7 @@
 
     .chart-wrapper {
       width: 100%;
-      overflow-x: auto;
+      overflow: hidden;
     }
 
     canvas {
@@ -173,13 +181,6 @@
       border-bottom: none;
     }
 
-    .measurement-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: center;
-    }
-
     .values {
       font-size: 20px;
       font-weight: bold;
@@ -201,13 +202,13 @@
       margin-top: 10px;
     }
 
-    .edit {
+    .edit-button {
       background: #e7edf6;
       color: #172033;
       flex: 1;
     }
 
-    .delete {
+    .delete-button {
       background: #ffebee;
       color: #b71c1c;
       flex: 1;
@@ -263,23 +264,24 @@
 
     <button
       id="saveButton"
-      class="save-button"
+      class="primary-button"
       onclick="saveMeasurement()">
       Messung speichern
     </button>
 
     <button
       id="cancelButton"
-      class="cancel-button"
+      class="secondary-button"
       onclick="cancelEdit()">
       Bearbeiten abbrechen
     </button>
   </div>
 
   <div class="card">
-    <h2>Durchschnitt</h2>
+    <h2>📊 Durchschnitt</h2>
 
     <div class="stats">
+
       <div class="stat">
         <strong id="avgSys">–</strong>
         <span>Oberer Wert</span>
@@ -294,6 +296,7 @@
         <strong id="avgPulse">–</strong>
         <span>Puls</span>
       </div>
+
     </div>
   </div>
 
@@ -307,11 +310,12 @@
     <div
       id="bloodPressureChartWrapper"
       class="chart-wrapper"
-      style="display:none;"
-    >
+      style="display:none;">
+
       <canvas id="bloodPressureChart"></canvas>
 
       <div class="legend">
+
         <div class="legend-item">
           <span class="legend-line blue"></span>
           Oberer Wert
@@ -321,6 +325,7 @@
           <span class="legend-line orange"></span>
           Unterer Wert
         </div>
+
       </div>
     </div>
   </div>
@@ -335,8 +340,8 @@
     <div
       id="pulseChartWrapper"
       class="chart-wrapper"
-      style="display:none;"
-    >
+      style="display:none;">
+
       <canvas id="pulseChart"></canvas>
 
       <div class="legend">
@@ -345,12 +350,44 @@
           Puls
         </div>
       </div>
+
     </div>
   </div>
 
   <div class="card">
+    <h2>💾 Datensicherung</h2>
+
+    <p class="description">
+      Sichere alle deine Messungen als Datei oder stelle
+      eine vorhandene Sicherung wieder her.
+    </p>
+
+    <button
+      class="primary-button"
+      onclick="createBackup()">
+      📥 Backup erstellen
+    </button>
+
+    <button
+      class="secondary-button"
+      onclick="document.getElementById('backupFile').click()">
+      📤 Backup wiederherstellen
+    </button>
+
+    <input
+      id="backupFile"
+      type="file"
+      accept=".json,application/json"
+      style="display:none;"
+      onchange="restoreBackup(event)"
+    >
+  </div>
+
+  <div class="card">
     <h2>Meine Messungen</h2>
+
     <div id="count" class="count"></div>
+
     <div id="measurements"></div>
   </div>
 
@@ -358,6 +395,7 @@
 
 <script>
   const STORAGE_KEY = "bloodPressureMeasurements";
+
   let editingIndex = null;
 
   function getMeasurements() {
@@ -502,42 +540,51 @@
       return;
     }
 
-    const sys =
+    const systolicAverage =
       measurements.reduce(
-        (sum, m) => sum + Number(m.systolic),
+        (sum, measurement) =>
+          sum + Number(measurement.systolic),
         0
       ) / measurements.length;
 
-    const dia =
+    const diastolicAverage =
       measurements.reduce(
-        (sum, m) => sum + Number(m.diastolic),
+        (sum, measurement) =>
+          sum + Number(measurement.diastolic),
         0
       ) / measurements.length;
 
-    const pulse =
+    const pulseAverage =
       measurements.reduce(
-        (sum, m) => sum + Number(m.pulse),
+        (sum, measurement) =>
+          sum + Number(measurement.pulse),
         0
       ) / measurements.length;
 
     document.getElementById("avgSys").textContent =
-      Math.round(sys);
+      Math.round(systolicAverage);
 
     document.getElementById("avgDia").textContent =
-      Math.round(dia);
+      Math.round(diastolicAverage);
 
     document.getElementById("avgPulse").textContent =
-      Math.round(pulse);
+      Math.round(pulseAverage);
   }
 
   function setupCanvas(canvas) {
     const rect = canvas.getBoundingClientRect();
-    const ratio = window.devicePixelRatio || 1;
 
-    canvas.width = rect.width * ratio;
-    canvas.height = 240 * ratio;
+    const ratio =
+      window.devicePixelRatio || 1;
 
-    const ctx = canvas.getContext("2d");
+    canvas.width =
+      Math.max(1, rect.width * ratio);
+
+    canvas.height =
+      240 * ratio;
+
+    const ctx =
+      canvas.getContext("2d");
 
     ctx.setTransform(
       ratio,
@@ -562,10 +609,21 @@
     minValue,
     maxValue
   ) {
-    const setup = setupCanvas(canvas);
-    const ctx = setup.ctx;
-    const width = setup.width;
-    const height = setup.height;
+    if (maxValue <= minValue) {
+      maxValue = minValue + 20;
+    }
+
+    const setup =
+      setupCanvas(canvas);
+
+    const ctx =
+      setup.ctx;
+
+    const width =
+      setup.width;
+
+    const height =
+      setup.height;
 
     const left = 42;
     const right = 12;
@@ -585,25 +643,39 @@
       height
     );
 
-    ctx.font = "12px Arial";
-    ctx.fillStyle = "#667085";
-    ctx.strokeStyle = "#e2e6eb";
+    ctx.font =
+      "12px Arial";
+
+    ctx.fillStyle =
+      "#667085";
+
+    ctx.strokeStyle =
+      "#e2e6eb";
+
     ctx.lineWidth = 1;
 
     const gridLines = 4;
 
-    for (let i = 0; i <= gridLines; i++) {
+    for (
+      let i = 0;
+      i <= gridLines;
+      i++
+    ) {
       const y =
         top +
         (chartHeight / gridLines) * i;
 
       const value =
         maxValue -
-        ((maxValue - minValue) / gridLines) * i;
+        ((maxValue - minValue) /
+          gridLines) * i;
 
       ctx.beginPath();
       ctx.moveTo(left, y);
-      ctx.lineTo(width - right, y);
+      ctx.lineTo(
+        width - right,
+        y
+      );
       ctx.stroke();
 
       ctx.fillText(
@@ -615,109 +687,142 @@
 
     series.forEach(function(item) {
       ctx.beginPath();
-      ctx.strokeStyle = item.color;
-      ctx.lineWidth = 3;
-      ctx.lineJoin = "round";
-      ctx.lineCap = "round";
 
-      data.forEach(function(measurement, index) {
-        const x =
-          data.length === 1
-            ? left + chartWidth / 2
-            : left +
-              (chartWidth / (data.length - 1)) *
+      ctx.strokeStyle =
+        item.color;
+
+      ctx.lineWidth = 3;
+
+      ctx.lineJoin =
+        "round";
+
+      ctx.lineCap =
+        "round";
+
+      data.forEach(
+        function(measurement, index) {
+
+          const x =
+            left +
+            (chartWidth /
+              (data.length - 1)) *
               index;
 
-        const value =
-          Number(measurement[item.key]);
+          const value =
+            Number(
+              measurement[item.key]
+            );
 
-        const y =
-          top +
-          ((maxValue - value) /
-            (maxValue - minValue)) *
-            chartHeight;
+          const y =
+            top +
+            ((maxValue - value) /
+              (maxValue - minValue)) *
+              chartHeight;
 
-        if (index === 0) {
-          ctx.moveTo(x, y);
-        } else {
-          ctx.lineTo(x, y);
+          if (index === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
         }
-      });
+      );
 
       ctx.stroke();
 
-      data.forEach(function(measurement, index) {
-        const x =
-          data.length === 1
-            ? left + chartWidth / 2
-            : left +
-              (chartWidth / (data.length - 1)) *
+      data.forEach(
+        function(measurement, index) {
+
+          const x =
+            left +
+            (chartWidth /
+              (data.length - 1)) *
               index;
 
-        const value =
-          Number(measurement[item.key]);
+          const value =
+            Number(
+              measurement[item.key]
+            );
 
-        const y =
-          top +
-          ((maxValue - value) /
-            (maxValue - minValue)) *
-            chartHeight;
+          const y =
+            top +
+            ((maxValue - value) /
+              (maxValue - minValue)) *
+              chartHeight;
 
-        ctx.beginPath();
-        ctx.fillStyle = item.color;
-        ctx.arc(
-          x,
-          y,
-          4,
-          0,
-          Math.PI * 2
-        );
-        ctx.fill();
-      });
+          ctx.beginPath();
+
+          ctx.fillStyle =
+            item.color;
+
+          ctx.arc(
+            x,
+            y,
+            4,
+            0,
+            Math.PI * 2
+          );
+
+          ctx.fill();
+        }
+      );
     });
 
     const labelIndexes = [];
 
     if (data.length <= 5) {
-      for (let i = 0; i < data.length; i++) {
+      for (
+        let i = 0;
+        i < data.length;
+        i++
+      ) {
         labelIndexes.push(i);
       }
     } else {
       labelIndexes.push(
         0,
-        Math.floor((data.length - 1) / 2),
+        Math.floor(
+          (data.length - 1) / 2
+        ),
         data.length - 1
       );
     }
 
-    ctx.fillStyle = "#667085";
-    ctx.textAlign = "center";
+    ctx.fillStyle =
+      "#667085";
 
-    labelIndexes.forEach(function(index) {
-      const x =
-        data.length === 1
-          ? left + chartWidth / 2
-          : left +
-            (chartWidth / (data.length - 1)) *
+    ctx.textAlign =
+      "center";
+
+    labelIndexes.forEach(
+      function(index) {
+
+        const x =
+          left +
+          (chartWidth /
+            (data.length - 1)) *
             index;
 
-      const date =
-        new Date(data[index].date);
+        const date =
+          new Date(
+            data[index].date
+          );
 
-      ctx.fillText(
-        date.toLocaleDateString(
-          "de-DE",
-          {
-            day: "2-digit",
-            month: "2-digit"
-          }
-        ),
-        x,
-        height - 12
-      );
-    });
+        ctx.fillText(
+          date.toLocaleDateString(
+            "de-DE",
+            {
+              day: "2-digit",
+              month: "2-digit"
+            }
+          ),
+          x,
+          height - 12
+        );
+      }
+    );
 
-    ctx.textAlign = "start";
+    ctx.textAlign =
+      "start";
   }
 
   function drawCharts(measurements) {
@@ -742,20 +847,32 @@
       );
 
     if (measurements.length < 2) {
-      bloodWrapper.style.display = "none";
-      pulseWrapper.style.display = "none";
+      bloodWrapper.style.display =
+        "none";
 
-      bloodEmpty.style.display = "block";
-      pulseEmpty.style.display = "block";
+      pulseWrapper.style.display =
+        "none";
+
+      bloodEmpty.style.display =
+        "block";
+
+      pulseEmpty.style.display =
+        "block";
 
       return;
     }
 
-    bloodWrapper.style.display = "block";
-    pulseWrapper.style.display = "block";
+    bloodWrapper.style.display =
+      "block";
 
-    bloodEmpty.style.display = "none";
-    pulseEmpty.style.display = "none";
+    pulseWrapper.style.display =
+      "block";
+
+    bloodEmpty.style.display =
+      "none";
+
+    pulseEmpty.style.display =
+      "none";
 
     const data =
       measurements
@@ -763,12 +880,18 @@
         .reverse();
 
     const bloodValues =
-      data.flatMap(function(m) {
-        return [
-          Number(m.systolic),
-          Number(m.diastolic)
-        ];
-      });
+      data.flatMap(
+        function(measurement) {
+          return [
+            Number(
+              measurement.systolic
+            ),
+            Number(
+              measurement.diastolic
+            )
+          ];
+        }
+      );
 
     let bloodMin =
       Math.min(...bloodValues) - 10;
@@ -779,11 +902,15 @@
     bloodMin =
       Math.max(
         0,
-        Math.floor(bloodMin / 10) * 10
+        Math.floor(
+          bloodMin / 10
+        ) * 10
       );
 
     bloodMax =
-      Math.ceil(bloodMax / 10) * 10;
+      Math.ceil(
+        bloodMax / 10
+      ) * 10;
 
     drawChart(
       document.getElementById(
@@ -805,9 +932,13 @@
     );
 
     const pulseValues =
-      data.map(function(m) {
-        return Number(m.pulse);
-      });
+      data.map(
+        function(measurement) {
+          return Number(
+            measurement.pulse
+          );
+        }
+      );
 
     let pulseMin =
       Math.min(...pulseValues) - 10;
@@ -818,11 +949,15 @@
     pulseMin =
       Math.max(
         0,
-        Math.floor(pulseMin / 10) * 10
+        Math.floor(
+          pulseMin / 10
+        ) * 10
       );
 
     pulseMax =
-      Math.ceil(pulseMax / 10) * 10;
+      Math.ceil(
+        pulseMax / 10
+      ) * 10;
 
     drawChart(
       document.getElementById(
@@ -840,6 +975,200 @@
     );
   }
 
+  function createBackup() {
+    const measurements =
+      getMeasurements();
+
+    if (measurements.length === 0) {
+      alert(
+        "Es sind noch keine Messungen zum Sichern vorhanden."
+      );
+      return;
+    }
+
+    const backup = {
+      app: "Blutdruck",
+      version: 1,
+      created:
+        new Date().toISOString(),
+      measurements:
+        measurements
+    };
+
+    const blob =
+      new Blob(
+        [
+          JSON.stringify(
+            backup,
+            null,
+            2
+          )
+        ],
+        {
+          type:
+            "application/json"
+        }
+      );
+
+    const url =
+      URL.createObjectURL(blob);
+
+    const link =
+      document.createElement("a");
+
+    const date =
+      new Date()
+        .toISOString()
+        .slice(0, 10);
+
+    link.href = url;
+
+    link.download =
+      "Blutdruck-Backup-" +
+      date +
+      ".json";
+
+    document.body.appendChild(
+      link
+    );
+
+    link.click();
+
+    link.remove();
+
+    setTimeout(
+      function() {
+        URL.revokeObjectURL(url);
+      },
+      1000
+    );
+  }
+
+  function restoreBackup(event) {
+    const file =
+      event.target.files[0];
+
+    if (!file) {
+      return;
+    }
+
+    const reader =
+      new FileReader();
+
+    reader.onload =
+      function(e) {
+        try {
+          const backup =
+            JSON.parse(
+              e.target.result
+            );
+
+          if (
+            !backup ||
+            !Array.isArray(
+              backup.measurements
+            )
+          ) {
+            throw new Error(
+              "Invalid backup"
+            );
+          }
+
+          const valid =
+            backup.measurements.every(
+              function(measurement) {
+
+                const systolic =
+                  Number(
+                    measurement.systolic
+                  );
+
+                const diastolic =
+                  Number(
+                    measurement.diastolic
+                  );
+
+                const pulse =
+                  Number(
+                    measurement.pulse
+                  );
+
+                const date =
+                  new Date(
+                    measurement.date
+                  );
+
+                return (
+                  Number.isFinite(
+                    systolic
+                  ) &&
+                  Number.isFinite(
+                    diastolic
+                  ) &&
+                  Number.isFinite(
+                    pulse
+                  ) &&
+                  systolic >= 50 &&
+                  systolic <= 300 &&
+                  diastolic >= 30 &&
+                  diastolic <= 200 &&
+                  pulse >= 25 &&
+                  pulse <= 250 &&
+                  !Number.isNaN(
+                    date.getTime()
+                  )
+                );
+              }
+            );
+
+          if (!valid) {
+            throw new Error(
+              "Invalid measurements"
+            );
+          }
+
+          if (
+            !confirm(
+              "Vorhandene Messungen durch dieses Backup ersetzen?"
+            )
+          ) {
+            event.target.value = "";
+            return;
+          }
+
+          setMeasurements(
+            backup.measurements
+          );
+
+          clearForm();
+          showMeasurements();
+
+          alert(
+            backup.measurements.length +
+            " Messungen wurden wiederhergestellt."
+          );
+
+        } catch (error) {
+          alert(
+            "Diese Datei ist kein gültiges Blutdruck-Backup."
+          );
+        }
+
+        event.target.value = "";
+      };
+
+    reader.onerror =
+      function() {
+        alert(
+          "Die Backup-Datei konnte nicht gelesen werden."
+        );
+
+        event.target.value = "";
+      };
+
+    reader.readAsText(file);
+  }
+
   function showMeasurements() {
     const container =
       document.getElementById(
@@ -847,13 +1176,20 @@
       );
 
     const count =
-      document.getElementById("count");
+      document.getElementById(
+        "count"
+      );
 
     const measurements =
       getMeasurements();
 
-    updateAverage(measurements);
-    drawCharts(measurements);
+    updateAverage(
+      measurements
+    );
+
+    drawCharts(
+      measurements
+    );
 
     count.textContent =
       measurements.length === 1
@@ -861,7 +1197,9 @@
         : measurements.length +
           " gespeicherte Messungen";
 
-    if (measurements.length === 0) {
+    if (
+      measurements.length === 0
+    ) {
       container.innerHTML =
         '<div class="empty">' +
         'Noch keine Messungen gespeichert.' +
@@ -872,20 +1210,22 @@
 
     container.innerHTML =
       measurements.map(
-        function(measurement, index) {
-
+        function(
+          measurement,
+          index
+        ) {
           const date =
-            new Date(measurement.date);
+            new Date(
+              measurement.date
+            );
 
           return `
             <div class="measurement">
 
-              <div class="measurement-top">
-                <div class="values">
-                  ${measurement.systolic} /
-                  ${measurement.diastolic}
-                  <small>mmHg</small>
-                </div>
+              <div class="values">
+                ${measurement.systolic} /
+                ${measurement.diastolic}
+                <small>mmHg</small>
               </div>
 
               <div class="pulse">
@@ -900,13 +1240,13 @@
               <div class="actions">
 
                 <button
-                  class="edit"
+                  class="edit-button"
                   onclick="editMeasurement(${index})">
                   ✏️ Bearbeiten
                 </button>
 
                 <button
-                  class="delete"
+                  class="delete-button"
                   onclick="deleteMeasurement(${index})">
                   🗑️ Löschen
                 </button>
@@ -924,22 +1264,31 @@
   window.addEventListener(
     "resize",
     function() {
-      drawCharts(getMeasurements());
+      drawCharts(
+        getMeasurements()
+      );
     }
   );
 
-  if ("serviceWorker" in navigator) {
+  if (
+    "serviceWorker" in navigator
+  ) {
     window.addEventListener(
       "load",
       function() {
-        navigator.serviceWorker
-          .register("./service-worker.js")
-          .catch(function(error) {
-            console.error(
-              "Service Worker registration failed:",
-              error
-            );
-          });
+        navigator
+          .serviceWorker
+          .register(
+            "./service-worker.js"
+          )
+          .catch(
+            function(error) {
+              console.error(
+                "Service Worker registration failed:",
+                error
+              );
+            }
+          );
       }
     );
   }
