@@ -99,6 +99,32 @@
       display: none;
     }
 
+    .period-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+      margin-bottom: 14px;
+    }
+
+    .period-button {
+      background: #e7edf6;
+      color: #172033;
+      padding: 10px 5px;
+      font-size: 14px;
+    }
+
+    .period-button.active {
+      background: #1565c0;
+      color: white;
+    }
+
+    .average-info {
+      color: #667085;
+      font-size: 13px;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
     .stats {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -196,6 +222,15 @@
       margin-top: 6px;
     }
 
+    .daypart {
+      display: inline-block;
+      margin-top: 7px;
+      padding: 5px 9px;
+      background: #f3f6fa;
+      border-radius: 10px;
+      font-size: 13px;
+    }
+
     .actions {
       display: flex;
       gap: 8px;
@@ -279,6 +314,34 @@
 
   <div class="card">
     <h2>📊 Durchschnitt</h2>
+
+    <div class="period-buttons">
+      <button
+        id="period7"
+        class="period-button"
+        onclick="setAveragePeriod(7)">
+        7 Tage
+      </button>
+
+      <button
+        id="period30"
+        class="period-button"
+        onclick="setAveragePeriod(30)">
+        30 Tage
+      </button>
+
+      <button
+        id="periodAll"
+        class="period-button active"
+        onclick="setAveragePeriod('all')">
+        Alle
+      </button>
+    </div>
+
+    <div
+      id="averageInfo"
+      class="average-info">
+    </div>
 
     <div class="stats">
 
@@ -397,6 +460,7 @@
   const STORAGE_KEY = "bloodPressureMeasurements";
 
   let editingIndex = null;
+  let averagePeriod = "all";
 
   function getMeasurements() {
     try {
@@ -412,6 +476,59 @@
     localStorage.setItem(
       STORAGE_KEY,
       JSON.stringify(measurements)
+    );
+  }
+
+  function getDaypart(dateValue) {
+    const hour =
+      new Date(dateValue).getHours();
+
+    if (hour >= 5 && hour < 10) {
+      return "🌅 Morgens";
+    }
+
+    if (hour >= 10 && hour < 18) {
+      return "☀️ Tagsüber";
+    }
+
+    if (hour >= 18 && hour < 23) {
+      return "🌙 Abends";
+    }
+
+    return "🌃 Nachts";
+  }
+
+  function setAveragePeriod(period) {
+    averagePeriod = period;
+
+    document
+      .getElementById("period7")
+      .classList.remove("active");
+
+    document
+      .getElementById("period30")
+      .classList.remove("active");
+
+    document
+      .getElementById("periodAll")
+      .classList.remove("active");
+
+    if (period === 7) {
+      document
+        .getElementById("period7")
+        .classList.add("active");
+    } else if (period === 30) {
+      document
+        .getElementById("period30")
+        .classList.add("active");
+    } else {
+      document
+        .getElementById("periodAll")
+        .classList.add("active");
+    }
+
+    updateAverage(
+      getMeasurements()
     );
   }
 
@@ -445,7 +562,8 @@
       return;
     }
 
-    const measurements = getMeasurements();
+    const measurements =
+      getMeasurements();
 
     if (editingIndex === null) {
       measurements.unshift({
@@ -455,9 +573,14 @@
         date: new Date().toISOString()
       });
     } else {
-      measurements[editingIndex].systolic = systolic;
-      measurements[editingIndex].diastolic = diastolic;
-      measurements[editingIndex].pulse = pulse;
+      measurements[editingIndex].systolic =
+        systolic;
+
+      measurements[editingIndex].diastolic =
+        diastolic;
+
+      measurements[editingIndex].pulse =
+        pulse;
     }
 
     setMeasurements(measurements);
@@ -467,8 +590,11 @@
   }
 
   function editMeasurement(index) {
-    const measurements = getMeasurements();
-    const measurement = measurements[index];
+    const measurements =
+      getMeasurements();
+
+    const measurement =
+      measurements[index];
 
     document.getElementById("systolic").value =
       measurement.systolic;
@@ -522,7 +648,8 @@
       return;
     }
 
-    const measurements = getMeasurements();
+    const measurements =
+      getMeasurements();
 
     measurements.splice(index, 1);
 
@@ -533,33 +660,98 @@
   }
 
   function updateAverage(measurements) {
-    if (measurements.length === 0) {
-      document.getElementById("avgSys").textContent = "–";
-      document.getElementById("avgDia").textContent = "–";
-      document.getElementById("avgPulse").textContent = "–";
+    let filteredMeasurements =
+      measurements;
+
+    if (averagePeriod !== "all") {
+      const cutoff =
+        new Date();
+
+      cutoff.setDate(
+        cutoff.getDate() -
+        Number(averagePeriod)
+      );
+
+      filteredMeasurements =
+        measurements.filter(
+          function(measurement) {
+            return (
+              new Date(measurement.date) >=
+              cutoff
+            );
+          }
+        );
+    }
+
+    const averageInfo =
+      document.getElementById(
+        "averageInfo"
+      );
+
+    const periodText =
+      averagePeriod === "all"
+        ? "Alle Messungen"
+        : "Letzte " +
+          averagePeriod +
+          " Tage";
+
+    averageInfo.textContent =
+      periodText +
+      " · " +
+      filteredMeasurements.length +
+      (
+        filteredMeasurements.length === 1
+          ? " Messung"
+          : " Messungen"
+      );
+
+    if (
+      filteredMeasurements.length === 0
+    ) {
+      document.getElementById("avgSys").textContent =
+        "–";
+
+      document.getElementById("avgDia").textContent =
+        "–";
+
+      document.getElementById("avgPulse").textContent =
+        "–";
+
       return;
     }
 
     const systolicAverage =
-      measurements.reduce(
-        (sum, measurement) =>
-          sum + Number(measurement.systolic),
+      filteredMeasurements.reduce(
+        function(sum, measurement) {
+          return (
+            sum +
+            Number(measurement.systolic)
+          );
+        },
         0
-      ) / measurements.length;
+      ) / filteredMeasurements.length;
 
     const diastolicAverage =
-      measurements.reduce(
-        (sum, measurement) =>
-          sum + Number(measurement.diastolic),
+      filteredMeasurements.reduce(
+        function(sum, measurement) {
+          return (
+            sum +
+            Number(measurement.diastolic)
+          );
+        },
         0
-      ) / measurements.length;
+      ) / filteredMeasurements.length;
 
     const pulseAverage =
-      measurements.reduce(
-        (sum, measurement) =>
-          sum + Number(measurement.pulse),
+      filteredMeasurements.reduce(
+        function(sum, measurement) {
+          return (
+            sum +
+            Number(measurement.pulse)
+          );
+        },
         0
-      ) / measurements.length;
+      ) / filteredMeasurements.length;
 
     document.getElementById("avgSys").textContent =
       Math.round(systolicAverage);
@@ -572,13 +764,17 @@
   }
 
   function setupCanvas(canvas) {
-    const rect = canvas.getBoundingClientRect();
+    const rect =
+      canvas.getBoundingClientRect();
 
     const ratio =
       window.devicePixelRatio || 1;
 
     canvas.width =
-      Math.max(1, rect.width * ratio);
+      Math.max(
+        1,
+        rect.width * ratio
+      );
 
     canvas.height =
       240 * ratio;
@@ -610,7 +806,8 @@
     maxValue
   ) {
     if (maxValue <= minValue) {
-      maxValue = minValue + 20;
+      maxValue =
+        minValue + 20;
     }
 
     const setup =
@@ -685,87 +882,95 @@
       );
     }
 
-    series.forEach(function(item) {
-      ctx.beginPath();
+    series.forEach(
+      function(item) {
+        ctx.beginPath();
 
-      ctx.strokeStyle =
-        item.color;
+        ctx.strokeStyle =
+          item.color;
 
-      ctx.lineWidth = 3;
+        ctx.lineWidth = 3;
 
-      ctx.lineJoin =
-        "round";
+        ctx.lineJoin =
+          "round";
 
-      ctx.lineCap =
-        "round";
+        ctx.lineCap =
+          "round";
 
-      data.forEach(
-        function(measurement, index) {
-
-          const x =
-            left +
-            (chartWidth /
-              (data.length - 1)) *
+        data.forEach(
+          function(measurement, index) {
+            const x =
+              left +
+              (
+                chartWidth /
+                (data.length - 1)
+              ) *
               index;
 
-          const value =
-            Number(
-              measurement[item.key]
-            );
+            const value =
+              Number(
+                measurement[item.key]
+              );
 
-          const y =
-            top +
-            ((maxValue - value) /
-              (maxValue - minValue)) *
+            const y =
+              top +
+              (
+                (maxValue - value) /
+                (maxValue - minValue)
+              ) *
               chartHeight;
 
-          if (index === 0) {
-            ctx.moveTo(x, y);
-          } else {
-            ctx.lineTo(x, y);
+            if (index === 0) {
+              ctx.moveTo(x, y);
+            } else {
+              ctx.lineTo(x, y);
+            }
           }
-        }
-      );
+        );
 
-      ctx.stroke();
+        ctx.stroke();
 
-      data.forEach(
-        function(measurement, index) {
-
-          const x =
-            left +
-            (chartWidth /
-              (data.length - 1)) *
+        data.forEach(
+          function(measurement, index) {
+            const x =
+              left +
+              (
+                chartWidth /
+                (data.length - 1)
+              ) *
               index;
 
-          const value =
-            Number(
-              measurement[item.key]
-            );
+            const value =
+              Number(
+                measurement[item.key]
+              );
 
-          const y =
-            top +
-            ((maxValue - value) /
-              (maxValue - minValue)) *
+            const y =
+              top +
+              (
+                (maxValue - value) /
+                (maxValue - minValue)
+              ) *
               chartHeight;
 
-          ctx.beginPath();
+            ctx.beginPath();
 
-          ctx.fillStyle =
-            item.color;
+            ctx.fillStyle =
+              item.color;
 
-          ctx.arc(
-            x,
-            y,
-            4,
-            0,
-            Math.PI * 2
-          );
+            ctx.arc(
+              x,
+              y,
+              4,
+              0,
+              Math.PI * 2
+            );
 
-          ctx.fill();
-        }
-      );
-    });
+            ctx.fill();
+          }
+        );
+      }
+    );
 
     const labelIndexes = [];
 
@@ -795,12 +1000,13 @@
 
     labelIndexes.forEach(
       function(index) {
-
         const x =
           left +
-          (chartWidth /
-            (data.length - 1)) *
-            index;
+          (
+            chartWidth /
+            (data.length - 1)
+          ) *
+          index;
 
         const date =
           new Date(
@@ -1077,7 +1283,6 @@
           const valid =
             backup.measurements.every(
               function(measurement) {
-
                 const systolic =
                   Number(
                     measurement.systolic
@@ -1235,6 +1440,10 @@
 
               <div class="date">
                 ${date.toLocaleString("de-DE")}
+              </div>
+
+              <div class="daypart">
+                ${getDaypart(measurement.date)}
               </div>
 
               <div class="actions">
