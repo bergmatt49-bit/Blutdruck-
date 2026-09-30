@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <meta name="theme-color" content="#1565c0">
 
   <title>Blutdruck</title>
@@ -27,26 +26,31 @@
     header {
       background: #1565c0;
       color: white;
-      padding: 24px 20px;
+      padding: 22px 16px;
       text-align: center;
     }
 
     header h1 {
       margin: 0;
-      font-size: 32px;
+      font-size: 30px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      opacity: 0.9;
     }
 
     main {
-      max-width: 600px;
-      margin: 25px auto;
-      padding: 0 16px;
+      max-width: 650px;
+      margin: 20px auto;
+      padding: 0 14px 30px;
     }
 
     .card {
       background: white;
       border-radius: 20px;
-      padding: 22px;
-      margin-bottom: 20px;
+      padding: 20px;
+      margin-bottom: 18px;
       box-shadow: 0 4px 18px rgba(0,0,0,0.08);
     }
 
@@ -56,33 +60,75 @@
 
     input {
       width: 100%;
-      padding: 16px;
-      margin: 8px 0;
+      padding: 15px;
+      margin: 7px 0;
       border: 1px solid #ccd4df;
       border-radius: 12px;
-      font-size: 18px;
+      font-size: 17px;
     }
 
     button {
-      width: 100%;
-      padding: 16px;
-      margin-top: 12px;
       border: none;
       border-radius: 12px;
-      background: #1565c0;
-      color: white;
-      font-size: 18px;
+      padding: 13px;
+      font-size: 16px;
       font-weight: bold;
       cursor: pointer;
     }
 
+    .save-button {
+      width: 100%;
+      margin-top: 10px;
+      background: #1565c0;
+      color: white;
+    }
+
+    .cancel-button {
+      width: 100%;
+      margin-top: 8px;
+      background: #e7edf6;
+      color: #172033;
+      display: none;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      text-align: center;
+    }
+
+    .stat {
+      background: #f3f6fa;
+      padding: 13px 5px;
+      border-radius: 14px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 19px;
+      margin-bottom: 4px;
+    }
+
+    .stat span {
+      font-size: 12px;
+      color: #666;
+    }
+
     .measurement {
-      border-bottom: 1px solid #ddd;
-      padding: 12px 0;
+      padding: 15px 0;
+      border-bottom: 1px solid #e2e6eb;
     }
 
     .measurement:last-child {
       border-bottom: none;
+    }
+
+    .measurement-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
     }
 
     .values {
@@ -90,14 +136,68 @@
       font-weight: bold;
     }
 
-    .date {
+    .pulse {
       margin-top: 4px;
+    }
+
+    .date {
       color: #666;
-      font-size: 14px;
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .edit {
+      background: #e7edf6;
+      color: #172033;
+      flex: 1;
+    }
+
+    .delete {
+      background: #ffebee;
+      color: #b71c1c;
+      flex: 1;
+    }
+
+    .badge {
+      padding: 5px 9px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .normal {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .elevated {
+      background: #fff8e1;
+      color: #8a6500;
+    }
+
+    .high {
+      background: #ffebee;
+      color: #c62828;
     }
 
     .empty {
       color: #666;
+      text-align: center;
+      padding: 15px;
+    }
+
+    .count {
+      color: #666;
+      font-size: 14px;
+      margin-top: -8px;
+      margin-bottom: 12px;
     }
   </style>
 </head>
@@ -106,18 +206,19 @@
 
 <header>
   <h1>🩺 Blutdruck</h1>
+  <p>Mein Blutdruck-Tagebuch</p>
 </header>
 
 <main>
 
   <div class="card">
-    <h2>Neue Messung</h2>
+    <h2 id="formTitle">Neue Messung</h2>
 
     <input
       id="systolic"
       type="number"
       inputmode="numeric"
-      placeholder="Oberer Wert, z. B. 140"
+      placeholder="Oberer Wert, z. B. 120"
     >
 
     <input
@@ -134,61 +235,246 @@
       placeholder="Puls, z. B. 70"
     >
 
-    <button type="button" onclick="saveMeasurement()">
+    <button
+      id="saveButton"
+      class="save-button"
+      onclick="saveMeasurement()">
       Messung speichern
+    </button>
+
+    <button
+      id="cancelButton"
+      class="cancel-button"
+      onclick="cancelEdit()">
+      Bearbeiten abbrechen
     </button>
   </div>
 
   <div class="card">
+    <h2>Durchschnitt</h2>
+
+    <div class="stats">
+      <div class="stat">
+        <strong id="avgSys">–</strong>
+        <span>Oberer Wert</span>
+      </div>
+
+      <div class="stat">
+        <strong id="avgDia">–</strong>
+        <span>Unterer Wert</span>
+      </div>
+
+      <div class="stat">
+        <strong id="avgPulse">–</strong>
+        <span>Puls</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
     <h2>Meine Messungen</h2>
+    <div id="count" class="count"></div>
     <div id="measurements"></div>
   </div>
 
 </main>
 
 <script>
+  const STORAGE_KEY = "bloodPressureMeasurements";
+  let editingIndex = null;
+
   function getMeasurements() {
     try {
-      return JSON.parse(localStorage.getItem("bloodPressureMeasurements")) || [];
+      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
     } catch (error) {
       return [];
     }
   }
 
+  function setMeasurements(measurements) {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(measurements)
+    );
+  }
+
   function saveMeasurement() {
-    const systolic = document.getElementById("systolic").value;
-    const diastolic = document.getElementById("diastolic").value;
-    const pulse = document.getElementById("pulse").value;
+    const systolic =
+      Number(document.getElementById("systolic").value);
+
+    const diastolic =
+      Number(document.getElementById("diastolic").value);
+
+    const pulse =
+      Number(document.getElementById("pulse").value);
 
     if (!systolic || !diastolic || !pulse) {
       alert("Bitte alle drei Werte eingeben.");
       return;
     }
 
+    if (
+      systolic < 50 || systolic > 300 ||
+      diastolic < 30 || diastolic > 200 ||
+      pulse < 25 || pulse > 250
+    ) {
+      alert("Bitte überprüfe die eingegebenen Werte.");
+      return;
+    }
+
     const measurements = getMeasurements();
 
-    measurements.unshift({
-      systolic: Number(systolic),
-      diastolic: Number(diastolic),
-      pulse: Number(pulse),
-      date: new Date().toISOString()
+    if (editingIndex === null) {
+      measurements.unshift({
+        systolic: systolic,
+        diastolic: diastolic,
+        pulse: pulse,
+        date: new Date().toISOString()
+      });
+    } else {
+      measurements[editingIndex].systolic = systolic;
+      measurements[editingIndex].diastolic = diastolic;
+      measurements[editingIndex].pulse = pulse;
+    }
+
+    setMeasurements(measurements);
+
+    clearForm();
+    showMeasurements();
+  }
+
+  function editMeasurement(index) {
+    const measurements = getMeasurements();
+    const measurement = measurements[index];
+
+    document.getElementById("systolic").value =
+      measurement.systolic;
+
+    document.getElementById("diastolic").value =
+      measurement.diastolic;
+
+    document.getElementById("pulse").value =
+      measurement.pulse;
+
+    editingIndex = index;
+
+    document.getElementById("formTitle").textContent =
+      "Messung bearbeiten";
+
+    document.getElementById("saveButton").textContent =
+      "Änderungen speichern";
+
+    document.getElementById("cancelButton").style.display =
+      "block";
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
     });
+  }
 
-    localStorage.setItem(
-      "bloodPressureMeasurements",
-      JSON.stringify(measurements)
-    );
+  function cancelEdit() {
+    clearForm();
+  }
 
+  function clearForm() {
     document.getElementById("systolic").value = "";
     document.getElementById("diastolic").value = "";
     document.getElementById("pulse").value = "";
 
+    editingIndex = null;
+
+    document.getElementById("formTitle").textContent =
+      "Neue Messung";
+
+    document.getElementById("saveButton").textContent =
+      "Messung speichern";
+
+    document.getElementById("cancelButton").style.display =
+      "none";
+  }
+
+  function deleteMeasurement(index) {
+    if (!confirm("Diese Messung wirklich löschen?")) {
+      return;
+    }
+
+    const measurements = getMeasurements();
+    measurements.splice(index, 1);
+
+    setMeasurements(measurements);
+
+    clearForm();
     showMeasurements();
   }
 
+  function getStatus(systolic, diastolic) {
+    if (systolic >= 140 || diastolic >= 90) {
+      return {
+        text: "Hoch",
+        className: "high"
+      };
+    }
+
+    if (systolic >= 130 || diastolic >= 85) {
+      return {
+        text: "Erhöht",
+        className: "elevated"
+      };
+    }
+
+    return {
+      text: "Im Bereich",
+      className: "normal"
+    };
+  }
+
+  function updateAverage(measurements) {
+    if (measurements.length === 0) {
+      document.getElementById("avgSys").textContent = "–";
+      document.getElementById("avgDia").textContent = "–";
+      document.getElementById("avgPulse").textContent = "–";
+      return;
+    }
+
+    const sys =
+      measurements.reduce((sum, m) => sum + Number(m.systolic), 0)
+      / measurements.length;
+
+    const dia =
+      measurements.reduce((sum, m) => sum + Number(m.diastolic), 0)
+      / measurements.length;
+
+    const pulse =
+      measurements.reduce((sum, m) => sum + Number(m.pulse), 0)
+      / measurements.length;
+
+    document.getElementById("avgSys").textContent =
+      Math.round(sys);
+
+    document.getElementById("avgDia").textContent =
+      Math.round(dia);
+
+    document.getElementById("avgPulse").textContent =
+      Math.round(pulse);
+  }
+
   function showMeasurements() {
-    const container = document.getElementById("measurements");
-    const measurements = getMeasurements();
+    const container =
+      document.getElementById("measurements");
+
+    const count =
+      document.getElementById("count");
+
+    const measurements =
+      getMeasurements();
+
+    updateAverage(measurements);
+
+    count.textContent =
+      measurements.length === 1
+        ? "1 gespeicherte Messung"
+        : measurements.length + " gespeicherte Messungen";
 
     if (measurements.length === 0) {
       container.innerHTML =
@@ -196,30 +482,75 @@
       return;
     }
 
-    container.innerHTML = measurements.map(function(measurement) {
-      const date = new Date(measurement.date);
+    container.innerHTML =
+      measurements.map(function(measurement, index) {
 
-      return `
-        <div class="measurement">
-          <div class="values">
-            ${measurement.systolic} / ${measurement.diastolic} mmHg
-            · Puls ${measurement.pulse}
+        const date =
+          new Date(measurement.date);
+
+        const status =
+          getStatus(
+            Number(measurement.systolic),
+            Number(measurement.diastolic)
+          );
+
+        return `
+          <div class="measurement">
+
+            <div class="measurement-top">
+
+              <div class="values">
+                ${measurement.systolic} /
+                ${measurement.diastolic}
+                <small>mmHg</small>
+              </div>
+
+              <span class="badge ${status.className}">
+                ${status.text}
+              </span>
+
+            </div>
+
+            <div class="pulse">
+              ❤️ Puls: ${measurement.pulse} /min
+            </div>
+
+            <div class="date">
+              ${date.toLocaleString("de-DE")}
+            </div>
+
+            <div class="actions">
+
+              <button
+                class="edit"
+                onclick="editMeasurement(${index})">
+                ✏️ Bearbeiten
+              </button>
+
+              <button
+                class="delete"
+                onclick="deleteMeasurement(${index})">
+                🗑️ Löschen
+              </button>
+
+            </div>
+
           </div>
-          <div class="date">
-            ${date.toLocaleString("de-DE")}
-          </div>
-        </div>
-      `;
-    }).join("");
+        `;
+      }).join("");
   }
 
   showMeasurements();
 
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", function() {
-      navigator.serviceWorker.register("./service-worker.js")
+      navigator.serviceWorker
+        .register("./service-worker.js")
         .catch(function(error) {
-          console.error("Service Worker registration failed:", error);
+          console.error(
+            "Service Worker registration failed:",
+            error
+          );
         });
     });
   }
