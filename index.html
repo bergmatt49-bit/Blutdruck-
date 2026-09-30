@@ -1,42 +1,229 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#1565c0">
-<title>Blutdruck</title>
-<link rel="manifest" href="./manifest.json">
-<link rel="icon" href="./icon-192.png">
-<link rel="apple-touch-icon" href="./icon-192.png">
-<style>
-body{margin:0;background:#f3f6fa;font-family:system-ui;color:#172033}
-header{background:#1565c0;color:#fff;padding:22px;text-align:center;font-size:26px;font-weight:700}
-main{max-width:600px;margin:auto;padding:16px}
-.card{background:#fff;padding:18px;border-radius:18px;margin-bottom:16px;box-shadow:0 2px 12px #0001}
-input,button{box-sizing:border-box;width:100%;padding:14px;margin:7px 0;border-radius:12px;font-size:18px}
-input{border:1px solid #ccd4df} button{border:0;background:#1565c0;color:#fff;font-weight:700}
-.secondary{background:#e7edf6;color:#26364a}.entry{padding:13px 0;border-bottom:1px solid #e5eaf0}
-.values{font-size:20px;font-weight:700}.date{color:#657287}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="theme-color" content="#1565c0">
+
+  <title>Blutdruck</title>
+
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./icon-192.png">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #f3f6fa;
+      font-family: Arial, sans-serif;
+      color: #172033;
+    }
+
+    header {
+      background: #1565c0;
+      color: white;
+      padding: 24px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 32px;
+    }
+
+    main {
+      max-width: 600px;
+      margin: 25px auto;
+      padding: 0 16px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    input {
+      width: 100%;
+      padding: 16px;
+      margin: 8px 0;
+      border: 1px solid #ccd4df;
+      border-radius: 12px;
+      font-size: 18px;
+    }
+
+    button {
+      width: 100%;
+      padding: 16px;
+      margin-top: 12px;
+      border: none;
+      border-radius: 12px;
+      background: #1565c0;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .measurement {
+      border-bottom: 1px solid #ddd;
+      padding: 12px 0;
+    }
+
+    .measurement:last-child {
+      border-bottom: none;
+    }
+
+    .values {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .date {
+      margin-top: 4px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .empty {
+      color: #666;
+    }
+  </style>
 </head>
+
 <body>
-<header>🩺 Blutdruck</header>
+
+<header>
+  <h1>🩺 Blutdruck</h1>
+</header>
+
 <main>
-<div class="card"><h2>Neue Messung</h2>
-<input id="s" type="number" inputmode="numeric" placeholder="Oberer Wert, z. B. 140">
-<input id="d" type="number" inputmode="numeric" placeholder="Unterer Wert, z. B. 80">
-<input id="p" type="number" inputmode="numeric" placeholder="Puls, z. B. 70">
-<button onclick="save()">Messung speichern</button></div>
-<div class="card"><h2>Gespeicherte Messungen</h2><div id="list"></div>
-<button class="secondary" onclick="clearAll()">Alle Messungen löschen</button></div>
+
+  <div class="card">
+    <h2>Neue Messung</h2>
+
+    <input
+      id="systolic"
+      type="number"
+      inputmode="numeric"
+      placeholder="Oberer Wert, z. B. 140"
+    >
+
+    <input
+      id="diastolic"
+      type="number"
+      inputmode="numeric"
+      placeholder="Unterer Wert, z. B. 80"
+    >
+
+    <input
+      id="pulse"
+      type="number"
+      inputmode="numeric"
+      placeholder="Puls, z. B. 70"
+    >
+
+    <button type="button" onclick="saveMeasurement()">
+      Messung speichern
+    </button>
+  </div>
+
+  <div class="card">
+    <h2>Meine Messungen</h2>
+    <div id="measurements"></div>
+  </div>
+
 </main>
+
 <script>
-const K="blutdruck-v1",E=x=>document.getElementById(x);
-function get(){try{return JSON.parse(localStorage.getItem(K)||"[]")}catch(e){return[]}}
-function render(){let a=get();E("list").innerHTML=a.length?[...a].reverse().map(x=>`<div class="entry"><div class="values">${x.s} / ${x.d} mmHg &nbsp; ❤️ ${x.p}</div><div class="date">${x.t}</div></div>`).join(""):"Noch keine Messungen vorhanden."}
-function save(){let s=+E("s").value,d=+E("d").value,p=+E("p").value;if(!s||!d||!p){alert("Bitte alle drei Werte eingeben.");return}let a=get();a.push({s,d,p,t:new Date().toLocaleString("de-DE")});localStorage.setItem(K,JSON.stringify(a));E("s").value=E("d").value=E("p").value="";render()}
-function clearAll(){if(confirm("Wirklich alle Messungen löschen?")){localStorage.removeItem(K);render()}}
-render();
-if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js"))}
+  function getMeasurements() {
+    try {
+      return JSON.parse(localStorage.getItem("bloodPressureMeasurements")) || [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function saveMeasurement() {
+    const systolic = document.getElementById("systolic").value;
+    const diastolic = document.getElementById("diastolic").value;
+    const pulse = document.getElementById("pulse").value;
+
+    if (!systolic || !diastolic || !pulse) {
+      alert("Bitte alle drei Werte eingeben.");
+      return;
+    }
+
+    const measurements = getMeasurements();
+
+    measurements.unshift({
+      systolic: Number(systolic),
+      diastolic: Number(diastolic),
+      pulse: Number(pulse),
+      date: new Date().toISOString()
+    });
+
+    localStorage.setItem(
+      "bloodPressureMeasurements",
+      JSON.stringify(measurements)
+    );
+
+    document.getElementById("systolic").value = "";
+    document.getElementById("diastolic").value = "";
+    document.getElementById("pulse").value = "";
+
+    showMeasurements();
+  }
+
+  function showMeasurements() {
+    const container = document.getElementById("measurements");
+    const measurements = getMeasurements();
+
+    if (measurements.length === 0) {
+      container.innerHTML =
+        '<div class="empty">Noch keine Messungen gespeichert.</div>';
+      return;
+    }
+
+    container.innerHTML = measurements.map(function(measurement) {
+      const date = new Date(measurement.date);
+
+      return `
+        <div class="measurement">
+          <div class="values">
+            ${measurement.systolic} / ${measurement.diastolic} mmHg
+            · Puls ${measurement.pulse}
+          </div>
+          <div class="date">
+            ${date.toLocaleString("de-DE")}
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  showMeasurements();
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function() {
+      navigator.serviceWorker.register("./service-worker.js")
+        .catch(function(error) {
+          console.error("Service Worker registration failed:", error);
+        });
+    });
+  }
 </script>
-</body></html>
+
+</body>
+</html>
