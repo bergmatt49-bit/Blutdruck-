@@ -156,7 +156,7 @@
 
     canvas {
       width: 100%;
-      height: 240px;
+      height: 250px;
       display: block;
     }
 
@@ -316,7 +316,6 @@
     <h2>📊 Durchschnitt</h2>
 
     <div class="period-buttons">
-
       <button
         id="period7"
         class="period-button"
@@ -337,7 +336,6 @@
         onclick="setAveragePeriod('all')">
         Alle
       </button>
-
     </div>
 
     <div
@@ -346,7 +344,6 @@
     </div>
 
     <div class="stats">
-
       <div class="stat">
         <strong id="avgSys">–</strong>
         <span>Oberer Wert</span>
@@ -361,7 +358,6 @@
         <strong id="avgPulse">–</strong>
         <span>Puls</span>
       </div>
-
     </div>
   </div>
 
@@ -382,7 +378,6 @@
       <canvas id="bloodPressureChart"></canvas>
 
       <div class="legend">
-
         <div class="legend-item">
           <span class="legend-line blue"></span>
           Oberer Wert
@@ -392,7 +387,6 @@
           <span class="legend-line orange"></span>
           Unterer Wert
         </div>
-
       </div>
     </div>
   </div>
@@ -414,12 +408,10 @@
       <canvas id="pulseChart"></canvas>
 
       <div class="legend">
-
         <div class="legend-item">
           <span class="legend-line red"></span>
           Puls
         </div>
-
       </div>
     </div>
   </div>
@@ -457,7 +449,6 @@
     <h2>Meine Messungen</h2>
 
     <div id="count" class="count"></div>
-
     <div id="measurements"></div>
   </div>
 
@@ -487,8 +478,7 @@
   }
 
   function getDaypart(dateValue) {
-    const hour =
-      new Date(dateValue).getHours();
+    const hour = new Date(dateValue).getHours();
 
     if (hour >= 5 && hour < 10) {
       return "🌅 Morgens";
@@ -510,8 +500,7 @@
       return measurements;
     }
 
-    const cutoff =
-      new Date();
+    const cutoff = new Date();
 
     cutoff.setDate(
       cutoff.getDate() -
@@ -520,10 +509,7 @@
 
     return measurements.filter(
       function(measurement) {
-        return (
-          new Date(measurement.date) >=
-          cutoff
-        );
+        return new Date(measurement.date) >= cutoff;
       }
     );
   }
@@ -557,15 +543,12 @@
         .classList.add("active");
     }
 
-    const measurements =
-      getMeasurements();
+    const measurements = getMeasurements();
 
     updateAverage(measurements);
 
     drawCharts(
-      getMeasurementsForPeriod(
-        measurements
-      )
+      getMeasurementsForPeriod(measurements)
     );
   }
 
@@ -599,8 +582,7 @@
       return;
     }
 
-    const measurements =
-      getMeasurements();
+    const measurements = getMeasurements();
 
     if (editingIndex === null) {
       measurements.unshift({
@@ -610,14 +592,9 @@
         date: new Date().toISOString()
       });
     } else {
-      measurements[editingIndex].systolic =
-        systolic;
-
-      measurements[editingIndex].diastolic =
-        diastolic;
-
-      measurements[editingIndex].pulse =
-        pulse;
+      measurements[editingIndex].systolic = systolic;
+      measurements[editingIndex].diastolic = diastolic;
+      measurements[editingIndex].pulse = pulse;
     }
 
     setMeasurements(measurements);
@@ -627,11 +604,8 @@
   }
 
   function editMeasurement(index) {
-    const measurements =
-      getMeasurements();
-
-    const measurement =
-      measurements[index];
+    const measurements = getMeasurements();
+    const measurement = measurements[index];
 
     document.getElementById("systolic").value =
       measurement.systolic;
@@ -685,8 +659,7 @@
       return;
     }
 
-    const measurements =
-      getMeasurements();
+    const measurements = getMeasurements();
 
     measurements.splice(index, 1);
 
@@ -698,21 +671,15 @@
 
   function updateAverage(measurements) {
     const filteredMeasurements =
-      getMeasurementsForPeriod(
-        measurements
-      );
+      getMeasurementsForPeriod(measurements);
 
     const averageInfo =
-      document.getElementById(
-        "averageInfo"
-      );
+      document.getElementById("averageInfo");
 
     const periodText =
       averagePeriod === "all"
         ? "Alle Messungen"
-        : "Letzte " +
-          averagePeriod +
-          " Tage";
+        : "Letzte " + averagePeriod + " Tage";
 
     averageInfo.textContent =
       periodText +
@@ -724,28 +691,17 @@
           : " Messungen"
       );
 
-    if (
-      filteredMeasurements.length === 0
-    ) {
-      document.getElementById("avgSys").textContent =
-        "–";
-
-      document.getElementById("avgDia").textContent =
-        "–";
-
-      document.getElementById("avgPulse").textContent =
-        "–";
-
+    if (filteredMeasurements.length === 0) {
+      document.getElementById("avgSys").textContent = "–";
+      document.getElementById("avgDia").textContent = "–";
+      document.getElementById("avgPulse").textContent = "–";
       return;
     }
 
     const systolicAverage =
       filteredMeasurements.reduce(
         function(sum, measurement) {
-          return (
-            sum +
-            Number(measurement.systolic)
-          );
+          return sum + Number(measurement.systolic);
         },
         0
       ) / filteredMeasurements.length;
@@ -753,10 +709,7 @@
     const diastolicAverage =
       filteredMeasurements.reduce(
         function(sum, measurement) {
-          return (
-            sum +
-            Number(measurement.diastolic)
-          );
+          return sum + Number(measurement.diastolic);
         },
         0
       ) / filteredMeasurements.length;
@@ -764,10 +717,7 @@
     const pulseAverage =
       filteredMeasurements.reduce(
         function(sum, measurement) {
-          return (
-            sum +
-            Number(measurement.pulse)
-          );
+          return sum + Number(measurement.pulse);
         },
         0
       ) / filteredMeasurements.length;
@@ -783,20 +733,14 @@
   }
 
   function setupCanvas(canvas) {
-    const rect =
-      canvas.getBoundingClientRect();
-
-    const ratio =
-      window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const ratio = window.devicePixelRatio || 1;
 
     canvas.width =
-      Math.max(
-        1,
-        rect.width * ratio
-      );
+      Math.max(1, rect.width * ratio);
 
     canvas.height =
-      240 * ratio;
+      250 * ratio;
 
     const ctx =
       canvas.getContext("2d");
@@ -813,7 +757,28 @@
     return {
       ctx: ctx,
       width: rect.width,
-      height: 240
+      height: 250
+    };
+  }
+
+  function formatChartDate(dateValue) {
+    const date = new Date(dateValue);
+
+    const day =
+      String(date.getDate()).padStart(2, "0");
+
+    const month =
+      String(date.getMonth() + 1).padStart(2, "0");
+
+    const hours =
+      String(date.getHours()).padStart(2, "0");
+
+    const minutes =
+      String(date.getMinutes()).padStart(2, "0");
+
+    return {
+      date: day + "." + month + ".",
+      time: hours + ":" + minutes
     };
   }
 
@@ -825,26 +790,19 @@
     maxValue
   ) {
     if (maxValue <= minValue) {
-      maxValue =
-        minValue + 20;
+      maxValue = minValue + 20;
     }
 
-    const setup =
-      setupCanvas(canvas);
+    const setup = setupCanvas(canvas);
 
-    const ctx =
-      setup.ctx;
-
-    const width =
-      setup.width;
-
-    const height =
-      setup.height;
+    const ctx = setup.ctx;
+    const width = setup.width;
+    const height = setup.height;
 
     const left = 42;
     const right = 12;
     const top = 15;
-    const bottom = 38;
+    const bottom = 52;
 
     const chartWidth =
       width - left - right;
@@ -859,24 +817,14 @@
       height
     );
 
-    ctx.font =
-      "12px Arial";
-
-    ctx.fillStyle =
-      "#667085";
-
-    ctx.strokeStyle =
-      "#e2e6eb";
-
+    ctx.font = "12px Arial";
+    ctx.fillStyle = "#667085";
+    ctx.strokeStyle = "#e2e6eb";
     ctx.lineWidth = 1;
 
     const gridLines = 4;
 
-    for (
-      let i = 0;
-      i <= gridLines;
-      i++
-    ) {
+    for (let i = 0; i <= gridLines; i++) {
       const y =
         top +
         (chartHeight / gridLines) * i;
@@ -888,10 +836,7 @@
 
       ctx.beginPath();
       ctx.moveTo(left, y);
-      ctx.lineTo(
-        width - right,
-        y
-      );
+      ctx.lineTo(width - right, y);
       ctx.stroke();
 
       ctx.fillText(
@@ -905,16 +850,10 @@
       function(item) {
         ctx.beginPath();
 
-        ctx.strokeStyle =
-          item.color;
-
+        ctx.strokeStyle = item.color;
         ctx.lineWidth = 3;
-
-        ctx.lineJoin =
-          "round";
-
-        ctx.lineCap =
-          "round";
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
 
         data.forEach(
           function(measurement, index) {
@@ -973,9 +912,7 @@
               chartHeight;
 
             ctx.beginPath();
-
-            ctx.fillStyle =
-              item.color;
+            ctx.fillStyle = item.color;
 
             ctx.arc(
               x,
@@ -993,7 +930,7 @@
 
     const labelIndexes = [];
 
-    if (data.length <= 5) {
+    if (data.length <= 4) {
       for (
         let i = 0;
         i < data.length;
@@ -1011,11 +948,9 @@
       );
     }
 
-    ctx.fillStyle =
-      "#667085";
-
-    ctx.textAlign =
-      "center";
+    ctx.fillStyle = "#667085";
+    ctx.textAlign = "center";
+    ctx.font = "11px Arial";
 
     labelIndexes.forEach(
       function(index) {
@@ -1027,27 +962,26 @@
           ) *
           index;
 
-        const date =
-          new Date(
+        const label =
+          formatChartDate(
             data[index].date
           );
 
         ctx.fillText(
-          date.toLocaleDateString(
-            "de-DE",
-            {
-              day: "2-digit",
-              month: "2-digit"
-            }
-          ),
+          label.date,
           x,
-          height - 12
+          height - 25
+        );
+
+        ctx.fillText(
+          label.time,
+          x,
+          height - 10
         );
       }
     );
 
-    ctx.textAlign =
-      "start";
+    ctx.textAlign = "start";
   }
 
   function drawCharts(measurements) {
@@ -1072,32 +1006,20 @@
       );
 
     if (measurements.length < 2) {
-      bloodWrapper.style.display =
-        "none";
+      bloodWrapper.style.display = "none";
+      pulseWrapper.style.display = "none";
 
-      pulseWrapper.style.display =
-        "none";
-
-      bloodEmpty.style.display =
-        "block";
-
-      pulseEmpty.style.display =
-        "block";
+      bloodEmpty.style.display = "block";
+      pulseEmpty.style.display = "block";
 
       return;
     }
 
-    bloodWrapper.style.display =
-      "block";
+    bloodWrapper.style.display = "block";
+    pulseWrapper.style.display = "block";
 
-    pulseWrapper.style.display =
-      "block";
-
-    bloodEmpty.style.display =
-      "none";
-
-    pulseEmpty.style.display =
-      "none";
+    bloodEmpty.style.display = "none";
+    pulseEmpty.style.display = "none";
 
     const data =
       measurements
@@ -1108,12 +1030,8 @@
       data.flatMap(
         function(measurement) {
           return [
-            Number(
-              measurement.systolic
-            ),
-            Number(
-              measurement.diastolic
-            )
+            Number(measurement.systolic),
+            Number(measurement.diastolic)
           ];
         }
       );
@@ -1127,15 +1045,11 @@
     bloodMin =
       Math.max(
         0,
-        Math.floor(
-          bloodMin / 10
-        ) * 10
+        Math.floor(bloodMin / 10) * 10
       );
 
     bloodMax =
-      Math.ceil(
-        bloodMax / 10
-      ) * 10;
+      Math.ceil(bloodMax / 10) * 10;
 
     drawChart(
       document.getElementById(
@@ -1174,15 +1088,11 @@
     pulseMin =
       Math.max(
         0,
-        Math.floor(
-          pulseMin / 10
-        ) * 10
+        Math.floor(pulseMin / 10) * 10
       );
 
     pulseMax =
-      Math.ceil(
-        pulseMax / 10
-      ) * 10;
+      Math.ceil(pulseMax / 10) * 10;
 
     drawChart(
       document.getElementById(
@@ -1214,10 +1124,8 @@
     const backup = {
       app: "Blutdruck",
       version: 1,
-      created:
-        new Date().toISOString(),
-      measurements:
-        measurements
+      created: new Date().toISOString(),
+      measurements: measurements
     };
 
     const blob =
@@ -1230,8 +1138,7 @@
           )
         ],
         {
-          type:
-            "application/json"
+          type: "application/json"
         }
       );
 
@@ -1253,12 +1160,8 @@
       date +
       ".json";
 
-    document.body.appendChild(
-      link
-    );
-
+    document.body.appendChild(link);
     link.click();
-
     link.remove();
 
     setTimeout(
@@ -1302,7 +1205,6 @@
           const valid =
             backup.measurements.every(
               function(measurement) {
-
                 const systolic =
                   Number(
                     measurement.systolic
@@ -1324,15 +1226,9 @@
                   );
 
                 return (
-                  Number.isFinite(
-                    systolic
-                  ) &&
-                  Number.isFinite(
-                    diastolic
-                  ) &&
-                  Number.isFinite(
-                    pulse
-                  ) &&
+                  Number.isFinite(systolic) &&
+                  Number.isFinite(diastolic) &&
+                  Number.isFinite(pulse) &&
                   systolic >= 50 &&
                   systolic <= 300 &&
                   diastolic >= 30 &&
@@ -1408,9 +1304,7 @@
     const measurements =
       getMeasurements();
 
-    updateAverage(
-      measurements
-    );
+    updateAverage(measurements);
 
     drawCharts(
       getMeasurementsForPeriod(
@@ -1424,9 +1318,7 @@
         : measurements.length +
           " gespeicherte Messungen";
 
-    if (
-      measurements.length === 0
-    ) {
+    if (measurements.length === 0) {
       container.innerHTML =
         '<div class="empty">' +
         'Noch keine Messungen gespeichert.' +
@@ -1503,9 +1395,7 @@
     }
   );
 
-  if (
-    "serviceWorker" in navigator
-  ) {
+  if ("serviceWorker" in navigator) {
     window.addEventListener(
       "load",
       function() {
