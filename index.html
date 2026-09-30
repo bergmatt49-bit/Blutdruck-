@@ -1,1421 +1,155 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#1565c0">
-
-  <title>Blutdruck</title>
-
-  <link rel="manifest" href="./manifest.json">
-  <link rel="icon" href="./icon-192.png">
-  <link rel="apple-touch-icon" href="./icon-192.png">
-
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      background: #f3f6fa;
-      font-family: Arial, sans-serif;
-      color: #172033;
-    }
-
-    header {
-      background: #1565c0;
-      color: white;
-      padding: 22px 16px;
-      text-align: center;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 30px;
-    }
-
-    header p {
-      margin: 6px 0 0;
-      opacity: 0.9;
-    }
-
-    main {
-      max-width: 650px;
-      margin: 20px auto;
-      padding: 0 14px 30px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 20px;
-      padding: 20px;
-      margin-bottom: 18px;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
-    }
-
-    h2 {
-      margin-top: 0;
-    }
-
-    .description {
-      color: #667085;
-      line-height: 1.5;
-    }
-
-    input {
-      width: 100%;
-      padding: 15px;
-      margin: 7px 0;
-      border: 1px solid #ccd4df;
-      border-radius: 12px;
-      font-size: 17px;
-    }
-
-    button {
-      border: none;
-      border-radius: 12px;
-      padding: 13px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .primary-button {
-      width: 100%;
-      margin-top: 10px;
-      background: #1565c0;
-      color: white;
-    }
-
-    .secondary-button {
-      width: 100%;
-      margin-top: 8px;
-      background: #e7edf6;
-      color: #172033;
-    }
-
-    #cancelButton {
-      display: none;
-    }
-
-    .period-buttons {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 7px;
-      margin-bottom: 14px;
-    }
-
-    .period-button {
-      background: #e7edf6;
-      color: #172033;
-      padding: 10px 5px;
-      font-size: 14px;
-    }
-
-    .period-button.active {
-      background: #1565c0;
-      color: white;
-    }
-
-    .average-info {
-      color: #667085;
-      font-size: 13px;
-      text-align: center;
-      margin-bottom: 12px;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      text-align: center;
-    }
-
-    .stat {
-      background: #f3f6fa;
-      padding: 13px 5px;
-      border-radius: 14px;
-    }
-
-    .stat strong {
-      display: block;
-      font-size: 19px;
-      margin-bottom: 4px;
-    }
-
-    .stat span {
-      font-size: 12px;
-      color: #666;
-    }
-
-    .chart-wrapper {
-      width: 100%;
-      overflow: hidden;
-    }
-
-    canvas {
-      width: 100%;
-      height: 250px;
-      display: block;
-    }
-
-    .legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-      margin-top: 12px;
-      font-size: 13px;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .legend-line {
-      width: 20px;
-      height: 4px;
-      border-radius: 4px;
-    }
-
-    .blue {
-      background: #1565c0;
-    }
-
-    .orange {
-      background: #ef6c00;
-    }
-
-    .red {
-      background: #c62828;
-    }
-
-    .chart-empty {
-      text-align: center;
-      color: #666;
-      padding: 35px 10px;
-    }
-
-    .measurement {
-      padding: 15px 0;
-      border-bottom: 1px solid #e2e6eb;
-    }
-
-    .measurement:last-child {
-      border-bottom: none;
-    }
-
-    .values {
-      font-size: 20px;
-      font-weight: bold;
-    }
-
-    .pulse {
-      margin-top: 4px;
-    }
-
-    .date {
-      color: #666;
-      font-size: 13px;
-      margin-top: 6px;
-    }
-
-    .daypart {
-      display: inline-block;
-      margin-top: 7px;
-      padding: 5px 9px;
-      background: #f3f6fa;
-      border-radius: 10px;
-      font-size: 13px;
-    }
-
-    .actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .edit-button {
-      background: #e7edf6;
-      color: #172033;
-      flex: 1;
-    }
-
-    .delete-button {
-      background: #ffebee;
-      color: #b71c1c;
-      flex: 1;
-    }
-
-    .empty {
-      color: #666;
-      text-align: center;
-      padding: 15px;
-    }
-
-    .count {
-      color: #666;
-      font-size: 14px;
-      margin-top: -8px;
-      margin-bottom: 12px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1565c0">
+<title>Blutdruck</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<style>
+:root{--bg:#f3f6fa;--card:#fff;--text:#172033;--muted:#667085;--primary:#1565c0;--soft:#e7edf6;--line:#e2e6eb;--danger:#b71c1c;--dangerbg:#ffebee}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);font-family:Arial,sans-serif;color:var(--text);transition:.2s}
+body.dark{--bg:#10141c;--card:#1b2230;--text:#f3f6fa;--muted:#aab4c4;--soft:#2a3445;--line:#344052;--dangerbg:#3b2025}
+header{background:var(--primary);color:#fff;padding:22px 16px;text-align:center;position:relative} header h1{margin:0;font-size:30px} header p{margin:6px 0 0;opacity:.9}
+#themeButton{position:absolute;right:14px;top:16px;background:rgba(255,255,255,.18);color:#fff;padding:9px 11px}
+main{max-width:650px;margin:20px auto;padding:0 14px 35px}.card{background:var(--card);border-radius:20px;padding:20px;margin-bottom:18px;box-shadow:0 4px 18px rgba(0,0,0,.08)}h2{margin-top:0}.description,.count,.average-info{color:var(--muted)}
+input,select,textarea{width:100%;padding:14px;margin:7px 0;border:1px solid #ccd4df;border-radius:12px;font-size:16px;background:var(--card);color:var(--text)}textarea{min-height:80px;resize:vertical}
+button{border:0;border-radius:12px;padding:13px;font-size:15px;font-weight:bold;cursor:pointer}.primary{width:100%;margin-top:9px;background:var(--primary);color:#fff}.secondary{width:100%;margin-top:8px;background:var(--soft);color:var(--text)}#cancelButton{display:none}
+.period-buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px}.period-button{background:var(--soft);color:var(--text);padding:10px 5px}.period-button.active{background:var(--primary);color:#fff}
+.custom-range{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.average-info{text-align:center;font-size:13px;margin:10px 0 12px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}.stat{background:var(--bg);padding:13px 5px;border-radius:14px}.stat strong{display:block;font-size:19px}.stat span{font-size:12px;color:var(--muted)}
+.substats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.substat{background:var(--bg);border-radius:14px;padding:12px;font-size:13px}.substat strong{display:block;margin-bottom:4px}
+.chart-wrapper{width:100%;overflow:hidden;position:relative}canvas{width:100%;height:260px;display:block}.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:13px}.legend-item{display:flex;align-items:center;gap:6px}.legend-line{width:20px;height:4px;border-radius:4px}.blue{background:#1565c0}.orange{background:#ef6c00}.red{background:#c62828}.chart-empty{text-align:center;color:var(--muted);padding:35px 10px}
+.tooltip{display:none;position:absolute;z-index:5;background:#172033;color:#fff;padding:9px 10px;border-radius:10px;font-size:12px;pointer-events:none;max-width:190px;box-shadow:0 3px 12px rgba(0,0,0,.25)}
+.measurement{padding:15px 0;border-bottom:1px solid var(--line)}.measurement:last-child{border-bottom:0}.values{font-size:20px;font-weight:bold}.pulse{margin-top:4px}.date{color:var(--muted);font-size:13px;margin-top:6px}.pill{display:inline-block;margin:7px 5px 0 0;padding:5px 9px;background:var(--bg);border-radius:10px;font-size:13px}.note{margin-top:9px;padding:9px;background:var(--bg);border-radius:10px;white-space:pre-wrap}.actions{display:flex;gap:8px;margin-top:10px}.edit{background:var(--soft);color:var(--text);flex:1}.delete{background:var(--dangerbg);color:var(--danger);flex:1}.empty{text-align:center;color:var(--muted);padding:15px}.count{font-size:14px;margin:-8px 0 12px}
+.report{white-space:pre-wrap;background:var(--bg);padding:12px;border-radius:12px;font-size:13px;line-height:1.45;max-height:320px;overflow:auto}
+@media(max-width:390px){.card{padding:16px}.stats{gap:5px}.stat strong{font-size:17px}.custom-range{grid-template-columns:1fr}}
+</style>
 </head>
-
 <body>
-
-<header>
-  <h1>🩺 Blutdruck</h1>
-  <p>Mein Blutdruck-Tagebuch</p>
-</header>
-
+<header><button id="themeButton" onclick="toggleTheme()">🌙</button><h1>🩺 Blutdruck</h1><p>Mein Blutdruck-Tagebuch</p></header>
 <main>
+<div class="card">
+<h2 id="formTitle">Neue Messung</h2>
+<input id="systolic" type="number" inputmode="numeric" placeholder="Oberer Wert, z. B. 120">
+<input id="diastolic" type="number" inputmode="numeric" placeholder="Unterer Wert, z. B. 80">
+<input id="pulse" type="number" inputmode="numeric" placeholder="Puls, z. B. 70">
+<select id="situation"><option value="Ruhe">🪑 Ruhe</option><option value="Nach Bewegung">🚶 Nach Bewegung</option><option value="Nach Essen">🍽️ Nach Essen</option><option value="Sonstiges">📌 Sonstiges</option></select>
+<textarea id="note" maxlength="500" placeholder="Notiz (optional), z. B. nach Kaffee, Kopfschmerzen ..."></textarea>
+<button id="saveButton" class="primary" onclick="saveMeasurement()">Messung speichern</button>
+<button id="cancelButton" class="secondary" onclick="cancelEdit()">Bearbeiten abbrechen</button>
+</div>
 
-  <div class="card">
-    <h2 id="formTitle">Neue Messung</h2>
+<div class="card">
+<h2>📊 Zeitraum & Durchschnitt</h2>
+<div class="period-buttons">
+<button id="period7" class="period-button" onclick="setPeriod(7)">7 Tage</button>
+<button id="period30" class="period-button" onclick="setPeriod(30)">30 Tage</button>
+<button id="periodAll" class="period-button active" onclick="setPeriod('all')">Alle</button>
+</div>
+<div class="custom-range"><input id="fromDate" type="date"><input id="toDate" type="date"></div>
+<button class="secondary" onclick="setCustomPeriod()">📅 Eigenen Zeitraum anwenden</button>
+<div id="averageInfo" class="average-info"></div>
+<div class="stats"><div class="stat"><strong id="avgSys">–</strong><span>Oberer Wert</span></div><div class="stat"><strong id="avgDia">–</strong><span>Unterer Wert</span></div><div class="stat"><strong id="avgPulse">–</strong><span>Puls</span></div></div>
+<div class="substats"><div class="substat"><strong>🌅 Morgens</strong><span id="morningAvg">Keine Messungen</span></div><div class="substat"><strong>🌙 Abends</strong><span id="eveningAvg">Keine Messungen</span></div></div>
+</div>
 
-    <input
-      id="systolic"
-      type="number"
-      inputmode="numeric"
-      placeholder="Oberer Wert, z. B. 120"
-    >
+<div class="card"><h2>📌 Statistik</h2><div class="stats"><div class="stat"><strong id="highest">–</strong><span>Höchster oberer Wert</span></div><div class="stat"><strong id="lowest">–</strong><span>Niedrigster oberer Wert</span></div><div class="stat"><strong id="statCount">0</strong><span>Messungen</span></div></div></div>
 
-    <input
-      id="diastolic"
-      type="number"
-      inputmode="numeric"
-      placeholder="Unterer Wert, z. B. 80"
-    >
+<div class="card"><h2>📈 Blutdruck-Verlauf</h2><div id="bloodEmpty" class="chart-empty">Mindestens 2 Messungen im gewählten Zeitraum benötigt.</div><div id="bloodWrap" class="chart-wrapper" style="display:none"><canvas id="bloodChart"></canvas><div id="bloodTip" class="tooltip"></div><div class="legend"><div class="legend-item"><span class="legend-line blue"></span>Oberer Wert</div><div class="legend-item"><span class="legend-line orange"></span>Unterer Wert</div></div></div></div>
+<div class="card"><h2>❤️ Puls-Verlauf</h2><div id="pulseEmpty" class="chart-empty">Mindestens 2 Messungen im gewählten Zeitraum benötigt.</div><div id="pulseWrap" class="chart-wrapper" style="display:none"><canvas id="pulseChart"></canvas><div id="pulseTip" class="tooltip"></div><div class="legend"><div class="legend-item"><span class="legend-line red"></span>Puls</div></div></div></div>
 
-    <input
-      id="pulse"
-      type="number"
-      inputmode="numeric"
-      placeholder="Puls, z. B. 70"
-    >
+<div class="card"><h2>📄 Arzt-Bericht</h2><p class="description">Der Bericht verwendet den oben gewählten Zeitraum.</p><button class="primary" onclick="makeReport()">Bericht erstellen</button><button id="copyReportButton" class="secondary" style="display:none" onclick="copyReport()">📋 Bericht kopieren</button><div id="report" class="report" style="display:none;margin-top:10px"></div></div>
 
-    <button
-      id="saveButton"
-      class="primary-button"
-      onclick="saveMeasurement()">
-      Messung speichern
-    </button>
+<div class="card"><h2>💾 Datensicherung</h2><p class="description">Backup-Dateien enthalten deine Messwerte und Notizen im Klartext. Bewahre sie privat auf.</p><button class="primary" onclick="createBackup()">📥 Backup erstellen</button><button class="secondary" onclick="document.getElementById('backupFile').click()">📤 Backup wiederherstellen</button><input id="backupFile" type="file" accept=".json,application/json" style="display:none" onchange="restoreBackup(event)"></div>
 
-    <button
-      id="cancelButton"
-      class="secondary-button"
-      onclick="cancelEdit()">
-      Bearbeiten abbrechen
-    </button>
-  </div>
-
-  <div class="card">
-    <h2>📊 Durchschnitt</h2>
-
-    <div class="period-buttons">
-      <button
-        id="period7"
-        class="period-button"
-        onclick="setAveragePeriod(7)">
-        7 Tage
-      </button>
-
-      <button
-        id="period30"
-        class="period-button"
-        onclick="setAveragePeriod(30)">
-        30 Tage
-      </button>
-
-      <button
-        id="periodAll"
-        class="period-button active"
-        onclick="setAveragePeriod('all')">
-        Alle
-      </button>
-    </div>
-
-    <div
-      id="averageInfo"
-      class="average-info">
-    </div>
-
-    <div class="stats">
-      <div class="stat">
-        <strong id="avgSys">–</strong>
-        <span>Oberer Wert</span>
-      </div>
-
-      <div class="stat">
-        <strong id="avgDia">–</strong>
-        <span>Unterer Wert</span>
-      </div>
-
-      <div class="stat">
-        <strong id="avgPulse">–</strong>
-        <span>Puls</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>📈 Blutdruck-Verlauf</h2>
-
-    <div
-      id="bloodPressureEmpty"
-      class="chart-empty">
-      Für das Diagramm werden mindestens 2 Messungen im gewählten Zeitraum benötigt.
-    </div>
-
-    <div
-      id="bloodPressureChartWrapper"
-      class="chart-wrapper"
-      style="display:none;">
-
-      <canvas id="bloodPressureChart"></canvas>
-
-      <div class="legend">
-        <div class="legend-item">
-          <span class="legend-line blue"></span>
-          Oberer Wert
-        </div>
-
-        <div class="legend-item">
-          <span class="legend-line orange"></span>
-          Unterer Wert
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>❤️ Puls-Verlauf</h2>
-
-    <div
-      id="pulseEmpty"
-      class="chart-empty">
-      Für das Diagramm werden mindestens 2 Messungen im gewählten Zeitraum benötigt.
-    </div>
-
-    <div
-      id="pulseChartWrapper"
-      class="chart-wrapper"
-      style="display:none;">
-
-      <canvas id="pulseChart"></canvas>
-
-      <div class="legend">
-        <div class="legend-item">
-          <span class="legend-line red"></span>
-          Puls
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>💾 Datensicherung</h2>
-
-    <p class="description">
-      Sichere alle deine Messungen als Datei oder stelle
-      eine vorhandene Sicherung wieder her.
-    </p>
-
-    <button
-      class="primary-button"
-      onclick="createBackup()">
-      📥 Backup erstellen
-    </button>
-
-    <button
-      class="secondary-button"
-      onclick="document.getElementById('backupFile').click()">
-      📤 Backup wiederherstellen
-    </button>
-
-    <input
-      id="backupFile"
-      type="file"
-      accept=".json,application/json"
-      style="display:none;"
-      onchange="restoreBackup(event)"
-    >
-  </div>
-
-  <div class="card">
-    <h2>Meine Messungen</h2>
-
-    <div id="count" class="count"></div>
-    <div id="measurements"></div>
-  </div>
-
+<div class="card"><h2>Meine Messungen</h2><div id="count" class="count"></div><div id="measurements"></div></div>
 </main>
 
 <script>
-  const STORAGE_KEY = "bloodPressureMeasurements";
-
-  let editingIndex = null;
-  let averagePeriod = "all";
-
-  function getMeasurements() {
-    try {
-      return JSON.parse(
-        localStorage.getItem(STORAGE_KEY)
-      ) || [];
-    } catch (error) {
-      return [];
-    }
-  }
-
-  function setMeasurements(measurements) {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(measurements)
-    );
-  }
-
-  function getDaypart(dateValue) {
-    const hour = new Date(dateValue).getHours();
-
-    if (hour >= 5 && hour < 10) {
-      return "🌅 Morgens";
-    }
-
-    if (hour >= 10 && hour < 18) {
-      return "☀️ Tagsüber";
-    }
-
-    if (hour >= 18 && hour < 23) {
-      return "🌙 Abends";
-    }
-
-    return "🌃 Nachts";
-  }
-
-  function getMeasurementsForPeriod(measurements) {
-    if (averagePeriod === "all") {
-      return measurements;
-    }
-
-    const cutoff = new Date();
-
-    cutoff.setDate(
-      cutoff.getDate() -
-      Number(averagePeriod)
-    );
-
-    return measurements.filter(
-      function(measurement) {
-        return new Date(measurement.date) >= cutoff;
-      }
-    );
-  }
-
-  function setAveragePeriod(period) {
-    averagePeriod = period;
-
-    document
-      .getElementById("period7")
-      .classList.remove("active");
-
-    document
-      .getElementById("period30")
-      .classList.remove("active");
-
-    document
-      .getElementById("periodAll")
-      .classList.remove("active");
-
-    if (period === 7) {
-      document
-        .getElementById("period7")
-        .classList.add("active");
-    } else if (period === 30) {
-      document
-        .getElementById("period30")
-        .classList.add("active");
-    } else {
-      document
-        .getElementById("periodAll")
-        .classList.add("active");
-    }
-
-    const measurements = getMeasurements();
-
-    updateAverage(measurements);
-
-    drawCharts(
-      getMeasurementsForPeriod(measurements)
-    );
-  }
-
-  function saveMeasurement() {
-    const systolic = Number(
-      document.getElementById("systolic").value
-    );
-
-    const diastolic = Number(
-      document.getElementById("diastolic").value
-    );
-
-    const pulse = Number(
-      document.getElementById("pulse").value
-    );
-
-    if (!systolic || !diastolic || !pulse) {
-      alert("Bitte alle drei Werte eingeben.");
-      return;
-    }
-
-    if (
-      systolic < 50 ||
-      systolic > 300 ||
-      diastolic < 30 ||
-      diastolic > 200 ||
-      pulse < 25 ||
-      pulse > 250
-    ) {
-      alert("Bitte überprüfe die eingegebenen Werte.");
-      return;
-    }
-
-    const measurements = getMeasurements();
-
-    if (editingIndex === null) {
-      measurements.unshift({
-        systolic: systolic,
-        diastolic: diastolic,
-        pulse: pulse,
-        date: new Date().toISOString()
-      });
-    } else {
-      measurements[editingIndex].systolic = systolic;
-      measurements[editingIndex].diastolic = diastolic;
-      measurements[editingIndex].pulse = pulse;
-    }
-
-    setMeasurements(measurements);
-
-    clearForm();
-    showMeasurements();
-  }
-
-  function editMeasurement(index) {
-    const measurements = getMeasurements();
-    const measurement = measurements[index];
-
-    document.getElementById("systolic").value =
-      measurement.systolic;
-
-    document.getElementById("diastolic").value =
-      measurement.diastolic;
-
-    document.getElementById("pulse").value =
-      measurement.pulse;
-
-    editingIndex = index;
-
-    document.getElementById("formTitle").textContent =
-      "Messung bearbeiten";
-
-    document.getElementById("saveButton").textContent =
-      "Änderungen speichern";
-
-    document.getElementById("cancelButton").style.display =
-      "block";
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-  }
-
-  function cancelEdit() {
-    clearForm();
-  }
-
-  function clearForm() {
-    document.getElementById("systolic").value = "";
-    document.getElementById("diastolic").value = "";
-    document.getElementById("pulse").value = "";
-
-    editingIndex = null;
-
-    document.getElementById("formTitle").textContent =
-      "Neue Messung";
-
-    document.getElementById("saveButton").textContent =
-      "Messung speichern";
-
-    document.getElementById("cancelButton").style.display =
-      "none";
-  }
-
-  function deleteMeasurement(index) {
-    if (!confirm("Diese Messung wirklich löschen?")) {
-      return;
-    }
-
-    const measurements = getMeasurements();
-
-    measurements.splice(index, 1);
-
-    setMeasurements(measurements);
-
-    clearForm();
-    showMeasurements();
-  }
-
-  function updateAverage(measurements) {
-    const filteredMeasurements =
-      getMeasurementsForPeriod(measurements);
-
-    const averageInfo =
-      document.getElementById("averageInfo");
-
-    const periodText =
-      averagePeriod === "all"
-        ? "Alle Messungen"
-        : "Letzte " + averagePeriod + " Tage";
-
-    averageInfo.textContent =
-      periodText +
-      " · " +
-      filteredMeasurements.length +
-      (
-        filteredMeasurements.length === 1
-          ? " Messung"
-          : " Messungen"
-      );
-
-    if (filteredMeasurements.length === 0) {
-      document.getElementById("avgSys").textContent = "–";
-      document.getElementById("avgDia").textContent = "–";
-      document.getElementById("avgPulse").textContent = "–";
-      return;
-    }
-
-    const systolicAverage =
-      filteredMeasurements.reduce(
-        function(sum, measurement) {
-          return sum + Number(measurement.systolic);
-        },
-        0
-      ) / filteredMeasurements.length;
-
-    const diastolicAverage =
-      filteredMeasurements.reduce(
-        function(sum, measurement) {
-          return sum + Number(measurement.diastolic);
-        },
-        0
-      ) / filteredMeasurements.length;
-
-    const pulseAverage =
-      filteredMeasurements.reduce(
-        function(sum, measurement) {
-          return sum + Number(measurement.pulse);
-        },
-        0
-      ) / filteredMeasurements.length;
-
-    document.getElementById("avgSys").textContent =
-      Math.round(systolicAverage);
-
-    document.getElementById("avgDia").textContent =
-      Math.round(diastolicAverage);
-
-    document.getElementById("avgPulse").textContent =
-      Math.round(pulseAverage);
-  }
-
-  function setupCanvas(canvas) {
-    const rect = canvas.getBoundingClientRect();
-    const ratio = window.devicePixelRatio || 1;
-
-    canvas.width =
-      Math.max(1, rect.width * ratio);
-
-    canvas.height =
-      250 * ratio;
-
-    const ctx =
-      canvas.getContext("2d");
-
-    ctx.setTransform(
-      ratio,
-      0,
-      0,
-      ratio,
-      0,
-      0
-    );
-
-    return {
-      ctx: ctx,
-      width: rect.width,
-      height: 250
-    };
-  }
-
-  function formatChartDate(dateValue) {
-    const date = new Date(dateValue);
-
-    const day =
-      String(date.getDate()).padStart(2, "0");
-
-    const month =
-      String(date.getMonth() + 1).padStart(2, "0");
-
-    const hours =
-      String(date.getHours()).padStart(2, "0");
-
-    const minutes =
-      String(date.getMinutes()).padStart(2, "0");
-
-    return {
-      date: day + "." + month + ".",
-      time: hours + ":" + minutes
-    };
-  }
-
-  function drawChart(
-    canvas,
-    data,
-    series,
-    minValue,
-    maxValue
-  ) {
-    if (maxValue <= minValue) {
-      maxValue = minValue + 20;
-    }
-
-    const setup = setupCanvas(canvas);
-
-    const ctx = setup.ctx;
-    const width = setup.width;
-    const height = setup.height;
-
-    const left = 42;
-    const right = 12;
-    const top = 15;
-    const bottom = 52;
-
-    const chartWidth =
-      width - left - right;
-
-    const chartHeight =
-      height - top - bottom;
-
-    ctx.clearRect(
-      0,
-      0,
-      width,
-      height
-    );
-
-    ctx.font = "12px Arial";
-    ctx.fillStyle = "#667085";
-    ctx.strokeStyle = "#e2e6eb";
-    ctx.lineWidth = 1;
-
-    const gridLines = 4;
-
-    for (let i = 0; i <= gridLines; i++) {
-      const y =
-        top +
-        (chartHeight / gridLines) * i;
-
-      const value =
-        maxValue -
-        ((maxValue - minValue) /
-          gridLines) * i;
-
-      ctx.beginPath();
-      ctx.moveTo(left, y);
-      ctx.lineTo(width - right, y);
-      ctx.stroke();
-
-      ctx.fillText(
-        Math.round(value),
-        3,
-        y + 4
-      );
-    }
-
-    series.forEach(
-      function(item) {
-        ctx.beginPath();
-
-        ctx.strokeStyle = item.color;
-        ctx.lineWidth = 3;
-        ctx.lineJoin = "round";
-        ctx.lineCap = "round";
-
-        data.forEach(
-          function(measurement, index) {
-            const x =
-              left +
-              (
-                chartWidth /
-                (data.length - 1)
-              ) *
-              index;
-
-            const value =
-              Number(
-                measurement[item.key]
-              );
-
-            const y =
-              top +
-              (
-                (maxValue - value) /
-                (maxValue - minValue)
-              ) *
-              chartHeight;
-
-            if (index === 0) {
-              ctx.moveTo(x, y);
-            } else {
-              ctx.lineTo(x, y);
-            }
-          }
-        );
-
-        ctx.stroke();
-
-        data.forEach(
-          function(measurement, index) {
-            const x =
-              left +
-              (
-                chartWidth /
-                (data.length - 1)
-              ) *
-              index;
-
-            const value =
-              Number(
-                measurement[item.key]
-              );
-
-            const y =
-              top +
-              (
-                (maxValue - value) /
-                (maxValue - minValue)
-              ) *
-              chartHeight;
-
-            ctx.beginPath();
-            ctx.fillStyle = item.color;
-
-            ctx.arc(
-              x,
-              y,
-              4,
-              0,
-              Math.PI * 2
-            );
-
-            ctx.fill();
-          }
-        );
-      }
-    );
-
-    const labelIndexes = [];
-
-    if (data.length <= 4) {
-      for (
-        let i = 0;
-        i < data.length;
-        i++
-      ) {
-        labelIndexes.push(i);
-      }
-    } else {
-      labelIndexes.push(
-        0,
-        Math.floor(
-          (data.length - 1) / 2
-        ),
-        data.length - 1
-      );
-    }
-
-    ctx.fillStyle = "#667085";
-    ctx.textAlign = "center";
-    ctx.font = "11px Arial";
-
-    labelIndexes.forEach(
-      function(index) {
-        const x =
-          left +
-          (
-            chartWidth /
-            (data.length - 1)
-          ) *
-          index;
-
-        const label =
-          formatChartDate(
-            data[index].date
-          );
-
-        ctx.fillText(
-          label.date,
-          x,
-          height - 25
-        );
-
-        ctx.fillText(
-          label.time,
-          x,
-          height - 10
-        );
-      }
-    );
-
-    ctx.textAlign = "start";
-  }
-
-  function drawCharts(measurements) {
-    const bloodWrapper =
-      document.getElementById(
-        "bloodPressureChartWrapper"
-      );
-
-    const bloodEmpty =
-      document.getElementById(
-        "bloodPressureEmpty"
-      );
-
-    const pulseWrapper =
-      document.getElementById(
-        "pulseChartWrapper"
-      );
-
-    const pulseEmpty =
-      document.getElementById(
-        "pulseEmpty"
-      );
-
-    if (measurements.length < 2) {
-      bloodWrapper.style.display = "none";
-      pulseWrapper.style.display = "none";
-
-      bloodEmpty.style.display = "block";
-      pulseEmpty.style.display = "block";
-
-      return;
-    }
-
-    bloodWrapper.style.display = "block";
-    pulseWrapper.style.display = "block";
-
-    bloodEmpty.style.display = "none";
-    pulseEmpty.style.display = "none";
-
-    const data =
-      measurements
-        .slice()
-        .reverse();
-
-    const bloodValues =
-      data.flatMap(
-        function(measurement) {
-          return [
-            Number(measurement.systolic),
-            Number(measurement.diastolic)
-          ];
-        }
-      );
-
-    let bloodMin =
-      Math.min(...bloodValues) - 10;
-
-    let bloodMax =
-      Math.max(...bloodValues) + 10;
-
-    bloodMin =
-      Math.max(
-        0,
-        Math.floor(bloodMin / 10) * 10
-      );
-
-    bloodMax =
-      Math.ceil(bloodMax / 10) * 10;
-
-    drawChart(
-      document.getElementById(
-        "bloodPressureChart"
-      ),
-      data,
-      [
-        {
-          key: "systolic",
-          color: "#1565c0"
-        },
-        {
-          key: "diastolic",
-          color: "#ef6c00"
-        }
-      ],
-      bloodMin,
-      bloodMax
-    );
-
-    const pulseValues =
-      data.map(
-        function(measurement) {
-          return Number(
-            measurement.pulse
-          );
-        }
-      );
-
-    let pulseMin =
-      Math.min(...pulseValues) - 10;
-
-    let pulseMax =
-      Math.max(...pulseValues) + 10;
-
-    pulseMin =
-      Math.max(
-        0,
-        Math.floor(pulseMin / 10) * 10
-      );
-
-    pulseMax =
-      Math.ceil(pulseMax / 10) * 10;
-
-    drawChart(
-      document.getElementById(
-        "pulseChart"
-      ),
-      data,
-      [
-        {
-          key: "pulse",
-          color: "#c62828"
-        }
-      ],
-      pulseMin,
-      pulseMax
-    );
-  }
-
-  function createBackup() {
-    const measurements =
-      getMeasurements();
-
-    if (measurements.length === 0) {
-      alert(
-        "Es sind noch keine Messungen zum Sichern vorhanden."
-      );
-      return;
-    }
-
-    const backup = {
-      app: "Blutdruck",
-      version: 1,
-      created: new Date().toISOString(),
-      measurements: measurements
-    };
-
-    const blob =
-      new Blob(
-        [
-          JSON.stringify(
-            backup,
-            null,
-            2
-          )
-        ],
-        {
-          type: "application/json"
-        }
-      );
-
-    const url =
-      URL.createObjectURL(blob);
-
-    const link =
-      document.createElement("a");
-
-    const date =
-      new Date()
-        .toISOString()
-        .slice(0, 10);
-
-    link.href = url;
-
-    link.download =
-      "Blutdruck-Backup-" +
-      date +
-      ".json";
-
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-
-    setTimeout(
-      function() {
-        URL.revokeObjectURL(url);
-      },
-      1000
-    );
-  }
-
-  function restoreBackup(event) {
-    const file =
-      event.target.files[0];
-
-    if (!file) {
-      return;
-    }
-
-    const reader =
-      new FileReader();
-
-    reader.onload =
-      function(e) {
-        try {
-          const backup =
-            JSON.parse(
-              e.target.result
-            );
-
-          if (
-            !backup ||
-            !Array.isArray(
-              backup.measurements
-            )
-          ) {
-            throw new Error(
-              "Invalid backup"
-            );
-          }
-
-          const valid =
-            backup.measurements.every(
-              function(measurement) {
-                const systolic =
-                  Number(
-                    measurement.systolic
-                  );
-
-                const diastolic =
-                  Number(
-                    measurement.diastolic
-                  );
-
-                const pulse =
-                  Number(
-                    measurement.pulse
-                  );
-
-                const date =
-                  new Date(
-                    measurement.date
-                  );
-
-                return (
-                  Number.isFinite(systolic) &&
-                  Number.isFinite(diastolic) &&
-                  Number.isFinite(pulse) &&
-                  systolic >= 50 &&
-                  systolic <= 300 &&
-                  diastolic >= 30 &&
-                  diastolic <= 200 &&
-                  pulse >= 25 &&
-                  pulse <= 250 &&
-                  !Number.isNaN(
-                    date.getTime()
-                  )
-                );
-              }
-            );
-
-          if (!valid) {
-            throw new Error(
-              "Invalid measurements"
-            );
-          }
-
-          if (
-            !confirm(
-              "Vorhandene Messungen durch dieses Backup ersetzen?"
-            )
-          ) {
-            event.target.value = "";
-            return;
-          }
-
-          setMeasurements(
-            backup.measurements
-          );
-
-          clearForm();
-          showMeasurements();
-
-          alert(
-            backup.measurements.length +
-            " Messungen wurden wiederhergestellt."
-          );
-
-        } catch (error) {
-          alert(
-            "Diese Datei ist kein gültiges Blutdruck-Backup."
-          );
-        }
-
-        event.target.value = "";
-      };
-
-    reader.onerror =
-      function() {
-        alert(
-          "Die Backup-Datei konnte nicht gelesen werden."
-        );
-
-        event.target.value = "";
-      };
-
-    reader.readAsText(file);
-  }
-
-  function showMeasurements() {
-    const container =
-      document.getElementById(
-        "measurements"
-      );
-
-    const count =
-      document.getElementById(
-        "count"
-      );
-
-    const measurements =
-      getMeasurements();
-
-    updateAverage(measurements);
-
-    drawCharts(
-      getMeasurementsForPeriod(
-        measurements
-      )
-    );
-
-    count.textContent =
-      measurements.length === 1
-        ? "1 gespeicherte Messung"
-        : measurements.length +
-          " gespeicherte Messungen";
-
-    if (measurements.length === 0) {
-      container.innerHTML =
-        '<div class="empty">' +
-        'Noch keine Messungen gespeichert.' +
-        '</div>';
-
-      return;
-    }
-
-    container.innerHTML =
-      measurements.map(
-        function(
-          measurement,
-          index
-        ) {
-          const date =
-            new Date(
-              measurement.date
-            );
-
-          return `
-            <div class="measurement">
-
-              <div class="values">
-                ${measurement.systolic} /
-                ${measurement.diastolic}
-                <small>mmHg</small>
-              </div>
-
-              <div class="pulse">
-                ❤️ Puls:
-                ${measurement.pulse} /min
-              </div>
-
-              <div class="date">
-                ${date.toLocaleString("de-DE")}
-              </div>
-
-              <div class="daypart">
-                ${getDaypart(measurement.date)}
-              </div>
-
-              <div class="actions">
-
-                <button
-                  class="edit-button"
-                  onclick="editMeasurement(${index})">
-                  ✏️ Bearbeiten
-                </button>
-
-                <button
-                  class="delete-button"
-                  onclick="deleteMeasurement(${index})">
-                  🗑️ Löschen
-                </button>
-
-              </div>
-
-            </div>
-          `;
-        }
-      ).join("");
-  }
-
-  showMeasurements();
-
-  window.addEventListener(
-    "resize",
-    function() {
-      drawCharts(
-        getMeasurementsForPeriod(
-          getMeasurements()
-        )
-      );
-    }
-  );
-
-  if ("serviceWorker" in navigator) {
-    window.addEventListener(
-      "load",
-      function() {
-        navigator
-          .serviceWorker
-          .register(
-            "./service-worker.js"
-          )
-          .catch(
-            function(error) {
-              console.error(
-                "Service Worker registration failed:",
-                error
-              );
-            }
-          );
-      }
-    );
-  }
+const STORAGE_KEY="bloodPressureMeasurements";
+let editingIndex=null, period="all", customFrom=null, customTo=null, chartPoints={blood:[],pulse:[]};
+
+function getMeasurements(){try{const x=JSON.parse(localStorage.getItem(STORAGE_KEY));return Array.isArray(x)?x:[]}catch(e){return[]}}
+function setMeasurements(x){localStorage.setItem(STORAGE_KEY,JSON.stringify(x))}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function getDaypart(v){const h=new Date(v).getHours();if(h>=5&&h<10)return"🌅 Morgens";if(h>=10&&h<18)return"☀️ Tagsüber";if(h>=18&&h<23)return"🌙 Abends";return"🌃 Nachts"}
+function filtered(ms){if(period==="all")return ms;if(period==="custom"){return ms.filter(m=>{const d=new Date(m.date);return(!customFrom||d>=customFrom)&&(!customTo||d<=customTo)})}const cut=new Date();cut.setDate(cut.getDate()-Number(period));return ms.filter(m=>new Date(m.date)>=cut)}
+function setPeriod(p){period=p;customFrom=customTo=null;["period7","period30","periodAll"].forEach(id=>document.getElementById(id).classList.remove("active"));document.getElementById(p===7?"period7":p===30?"period30":"periodAll").classList.add("active");refreshAnalysis()}
+function setCustomPeriod(){const f=document.getElementById("fromDate").value,t=document.getElementById("toDate").value;if(!f&&!t){alert("Bitte mindestens ein Datum auswählen.");return}customFrom=f?new Date(f+"T00:00:00"):null;customTo=t?new Date(t+"T23:59:59.999"):null;if(customFrom&&customTo&&customFrom>customTo){alert("Das Startdatum liegt nach dem Enddatum.");return}period="custom";["period7","period30","periodAll"].forEach(id=>document.getElementById(id).classList.remove("active"));refreshAnalysis()}
+function periodName(){if(period==="all")return"Alle Messungen";if(period==="custom")return"Eigener Zeitraum";return"Letzte "+period+" Tage"}
+
+function saveMeasurement(){
+ const s=Number(systolic.value),d=Number(diastolic.value),p=Number(pulse.value);
+ if(!s||!d||!p){alert("Bitte alle drei Werte eingeben.");return}
+ if(s<50||s>300||d<30||d>200||p<25||p>250){alert("Bitte überprüfe die eingegebenen Werte.");return}
+ const ms=getMeasurements(), obj={systolic:s,diastolic:d,pulse:p,situation:situation.value,note:note.value.trim()};
+ if(editingIndex===null){obj.date=new Date().toISOString();ms.unshift(obj)}else{Object.assign(ms[editingIndex],obj)}
+ setMeasurements(ms);clearForm();showMeasurements()
+}
+function editMeasurement(i){const m=getMeasurements()[i];systolic.value=m.systolic;diastolic.value=m.diastolic;pulse.value=m.pulse;situation.value=m.situation||"Ruhe";note.value=m.note||"";editingIndex=i;formTitle.textContent="Messung bearbeiten";saveButton.textContent="Änderungen speichern";cancelButton.style.display="block";scrollTo({top:0,behavior:"smooth"})}
+function clearForm(){systolic.value=diastolic.value=pulse.value=note.value="";situation.value="Ruhe";editingIndex=null;formTitle.textContent="Neue Messung";saveButton.textContent="Messung speichern";cancelButton.style.display="none"}
+function cancelEdit(){clearForm()}
+function deleteMeasurement(i){if(!confirm("Diese Messung wirklich löschen?"))return;const ms=getMeasurements();ms.splice(i,1);setMeasurements(ms);clearForm();showMeasurements()}
+
+function avg(ms,key){return ms.length?Math.round(ms.reduce((a,m)=>a+Number(m[key]),0)/ms.length):null}
+function fmtAvg(ms){return ms.length?`${avg(ms,"systolic")} / ${avg(ms,"diastolic")} · Puls ${avg(ms,"pulse")}`:"Keine Messungen"}
+function refreshAnalysis(){
+ const ms=filtered(getMeasurements());
+ averageInfo.textContent=`${periodName()} · ${ms.length} ${ms.length===1?"Messung":"Messungen"}`;
+ avgSys.textContent=avg(ms,"systolic")??"–";avgDia.textContent=avg(ms,"diastolic")??"–";avgPulse.textContent=avg(ms,"pulse")??"–";
+ const morning=ms.filter(m=>{const h=new Date(m.date).getHours();return h>=5&&h<10});
+ const evening=ms.filter(m=>{const h=new Date(m.date).getHours();return h>=18&&h<23});
+ morningAvg.textContent=fmtAvg(morning);eveningAvg.textContent=fmtAvg(evening);
+ highest.textContent=ms.length?Math.max(...ms.map(m=>Number(m.systolic))):"–";
+ lowest.textContent=ms.length?Math.min(...ms.map(m=>Number(m.systolic))):"–";
+ statCount.textContent=ms.length;
+ drawCharts(ms)
+}
+
+function setupCanvas(c){const r=c.getBoundingClientRect(),ratio=devicePixelRatio||1;c.width=Math.max(1,r.width*ratio);c.height=260*ratio;const x=c.getContext("2d");x.setTransform(ratio,0,0,ratio,0,0);return{x,w:r.width,h:260}}
+function chartLabel(v){const d=new Date(v);return[String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0")+".",String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")]}
+function drawChart(canvas,data,series,min,max,type){
+ const {x,w,h}=setupCanvas(canvas),L=42,R=12,T=15,B=52,CW=w-L-R,CH=h-T-B;if(max<=min)max=min+20;x.clearRect(0,0,w,h);x.font="12px Arial";x.fillStyle=getComputedStyle(document.body).getPropertyValue("--muted");x.strokeStyle=getComputedStyle(document.body).getPropertyValue("--line");x.lineWidth=1;
+ for(let i=0;i<=4;i++){const y=T+CH/4*i,val=max-(max-min)/4*i;x.beginPath();x.moveTo(L,y);x.lineTo(w-R,y);x.stroke();x.fillText(Math.round(val),3,y+4)}
+ chartPoints[type]=[];
+ series.forEach(item=>{x.beginPath();x.strokeStyle=item.color;x.lineWidth=3;x.lineJoin="round";x.lineCap="round";data.forEach((m,i)=>{const px=L+CW/(data.length-1)*i,val=Number(m[item.key]),py=T+(max-val)/(max-min)*CH;i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke();data.forEach((m,i)=>{const px=L+CW/(data.length-1)*i,val=Number(m[item.key]),py=T+(max-val)/(max-min)*CH;x.beginPath();x.fillStyle=item.color;x.arc(px,py,4,0,Math.PI*2);x.fill();if(!chartPoints[type][i])chartPoints[type][i]={x:px,measurement:m}})});
+ const idx=[];if(data.length<=4){data.forEach((_,i)=>idx.push(i))}else{idx.push(0,Math.floor((data.length-1)/2),data.length-1)}
+ x.fillStyle=getComputedStyle(document.body).getPropertyValue("--muted");x.textAlign="center";x.font="11px Arial";idx.forEach(i=>{const px=L+CW/(data.length-1)*i,[da,ti]=chartLabel(data[i].date);x.fillText(da,px,h-25);x.fillText(ti,px,h-10)});x.textAlign="start"
+}
+function drawCharts(ms){
+ const ok=ms.length>=2;bloodWrap.style.display=pulseWrap.style.display=ok?"block":"none";bloodEmpty.style.display=pulseEmpty.style.display=ok?"none":"block";if(!ok)return;
+ const data=ms.slice().sort((a,b)=>new Date(a.date)-new Date(b.date)),bv=data.flatMap(m=>[+m.systolic,+m.diastolic]),pv=data.map(m=>+m.pulse);
+ drawChart(bloodChart,data,[{key:"systolic",color:"#1565c0"},{key:"diastolic",color:"#ef6c00"}],Math.max(0,Math.floor((Math.min(...bv)-10)/10)*10),Math.ceil((Math.max(...bv)+10)/10)*10,"blood");
+ drawChart(pulseChart,data,[{key:"pulse",color:"#c62828"}],Math.max(0,Math.floor((Math.min(...pv)-10)/10)*10),Math.ceil((Math.max(...pv)+10)/10)*10,"pulse")
+}
+function bindChart(canvas,tip,type){canvas.addEventListener("click",e=>{const r=canvas.getBoundingClientRect(),x=e.clientX-r.left,pts=chartPoints[type];if(!pts.length)return;let q=pts.reduce((a,b)=>Math.abs(b.x-x)<Math.abs(a.x-x)?b:a),m=q.measurement,d=new Date(m.date);tip.innerHTML=`<b>${m.systolic}/${m.diastolic} mmHg</b><br>❤️ Puls ${m.pulse}/min<br>${d.toLocaleString("de-DE")}<br>${esc(m.situation||"")} ${m.note?"<br>"+esc(m.note):""}`;tip.style.display="block";tip.style.left=Math.min(Math.max(5,q.x-70),r.width-195)+"px";tip.style.top="8px";setTimeout(()=>tip.style.display="none",4500)})}
+
+function makeReport(){
+ const ms=filtered(getMeasurements());if(!ms.length){alert("Im gewählten Zeitraum gibt es keine Messungen.");return}
+ const ordered=ms.slice().sort((a,b)=>new Date(a.date)-new Date(b.date));
+ let s=`BLUTDRUCK-TAGEBUCH\nZeitraum: ${periodName()}\nMessungen: ${ms.length}\nDurchschnitt: ${avg(ms,"systolic")} / ${avg(ms,"diastolic")} mmHg\nDurchschnitt Puls: ${avg(ms,"pulse")} /min\n\n`;
+ ordered.forEach(m=>{s+=`${new Date(m.date).toLocaleString("de-DE")}  |  ${m.systolic}/${m.diastolic} mmHg  |  Puls ${m.pulse}/min  |  ${m.situation||"–"}${m.note?"  |  "+m.note:""}\n`});
+ report.textContent=s;report.style.display="block";copyReportButton.style.display="block"
+}
+async function copyReport(){try{await navigator.clipboard.writeText(report.textContent);alert("Bericht wurde kopiert.")}catch(e){alert("Kopieren war nicht möglich.")}}
+
+function createBackup(){const ms=getMeasurements();if(!ms.length){alert("Keine Messungen zum Sichern vorhanden.");return}const b={app:"Blutdruck",version:2,created:new Date().toISOString(),measurements:ms},blob=new Blob([JSON.stringify(b,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="Blutdruck-Backup-"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function restoreBackup(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=x=>{try{const b=JSON.parse(x.target.result);if(!b||!Array.isArray(b.measurements))throw 0;const valid=b.measurements.every(m=>Number.isFinite(+m.systolic)&&+m.systolic>=50&&+m.systolic<=300&&Number.isFinite(+m.diastolic)&&+m.diastolic>=30&&+m.diastolic<=200&&Number.isFinite(+m.pulse)&&+m.pulse>=25&&+m.pulse<=250&&!isNaN(new Date(m.date)));if(!valid)throw 0;if(confirm("Vorhandene Messungen durch dieses Backup ersetzen?")){setMeasurements(b.measurements);clearForm();showMeasurements();alert(b.measurements.length+" Messungen wurden wiederhergestellt.")}}catch(_){alert("Diese Datei ist kein gültiges Blutdruck-Backup.")}e.target.value=""};r.readAsText(f)}
+
+function showMeasurements(){
+ const ms=getMeasurements();count.textContent=ms.length===1?"1 gespeicherte Messung":ms.length+" gespeicherte Messungen";refreshAnalysis();
+ if(!ms.length){measurements.innerHTML='<div class="empty">Noch keine Messungen gespeichert.</div>';return}
+ measurements.innerHTML=ms.map((m,i)=>`<div class="measurement"><div class="values">${m.systolic} / ${m.diastolic} <small>mmHg</small></div><div class="pulse">❤️ Puls: ${m.pulse} /min</div><div class="date">${new Date(m.date).toLocaleString("de-DE")}</div><span class="pill">${getDaypart(m.date)}</span>${m.situation?`<span class="pill">${esc(m.situation)}</span>`:""}${m.note?`<div class="note">📝 ${esc(m.note)}</div>`:""}<div class="actions"><button class="edit" onclick="editMeasurement(${i})">✏️ Bearbeiten</button><button class="delete" onclick="deleteMeasurement(${i})">🗑️ Löschen</button></div></div>`).join("")
+}
+function toggleTheme(){document.body.classList.toggle("dark");const dark=document.body.classList.contains("dark");localStorage.setItem("bloodPressureTheme",dark?"dark":"light");themeButton.textContent=dark?"☀️":"🌙";refreshAnalysis()}
+if(localStorage.getItem("bloodPressureTheme")==="dark"){document.body.classList.add("dark");themeButton.textContent="☀️"}
+bindChart(bloodChart,bloodTip,"blood");bindChart(pulseChart,pulseTip,"pulse");
+showMeasurements();
+addEventListener("resize",()=>drawCharts(filtered(getMeasurements())));
+if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js").catch(console.error));
 </script>
-
 </body>
 </html>
