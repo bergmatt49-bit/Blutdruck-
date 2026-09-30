@@ -115,6 +115,55 @@
       color: #666;
     }
 
+    .chart-wrapper {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    canvas {
+      width: 100%;
+      height: 240px;
+      display: block;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 12px;
+      font-size: 13px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-line {
+      width: 20px;
+      height: 4px;
+      border-radius: 4px;
+    }
+
+    .blue {
+      background: #1565c0;
+    }
+
+    .orange {
+      background: #ef6c00;
+    }
+
+    .red {
+      background: #c62828;
+    }
+
+    .chart-empty {
+      text-align: center;
+      color: #666;
+      padding: 35px 10px;
+    }
+
     .measurement {
       padding: 15px 0;
       border-bottom: 1px solid #e2e6eb;
@@ -162,29 +211,6 @@
       background: #ffebee;
       color: #b71c1c;
       flex: 1;
-    }
-
-    .badge {
-      padding: 5px 9px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: bold;
-      white-space: nowrap;
-    }
-
-    .normal {
-      background: #e8f5e9;
-      color: #2e7d32;
-    }
-
-    .elevated {
-      background: #fff8e1;
-      color: #8a6500;
-    }
-
-    .high {
-      background: #ffebee;
-      color: #c62828;
     }
 
     .empty {
@@ -272,6 +298,57 @@
   </div>
 
   <div class="card">
+    <h2>📈 Blutdruck-Verlauf</h2>
+
+    <div id="bloodPressureEmpty" class="chart-empty">
+      Für das Diagramm werden mindestens 2 Messungen benötigt.
+    </div>
+
+    <div
+      id="bloodPressureChartWrapper"
+      class="chart-wrapper"
+      style="display:none;"
+    >
+      <canvas id="bloodPressureChart"></canvas>
+
+      <div class="legend">
+        <div class="legend-item">
+          <span class="legend-line blue"></span>
+          Oberer Wert
+        </div>
+
+        <div class="legend-item">
+          <span class="legend-line orange"></span>
+          Unterer Wert
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>❤️ Puls-Verlauf</h2>
+
+    <div id="pulseEmpty" class="chart-empty">
+      Für das Diagramm werden mindestens 2 Messungen benötigt.
+    </div>
+
+    <div
+      id="pulseChartWrapper"
+      class="chart-wrapper"
+      style="display:none;"
+    >
+      <canvas id="pulseChart"></canvas>
+
+      <div class="legend">
+        <div class="legend-item">
+          <span class="legend-line red"></span>
+          Puls
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
     <h2>Meine Messungen</h2>
     <div id="count" class="count"></div>
     <div id="measurements"></div>
@@ -285,7 +362,9 @@
 
   function getMeasurements() {
     try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      return JSON.parse(
+        localStorage.getItem(STORAGE_KEY)
+      ) || [];
     } catch (error) {
       return [];
     }
@@ -299,14 +378,17 @@
   }
 
   function saveMeasurement() {
-    const systolic =
-      Number(document.getElementById("systolic").value);
+    const systolic = Number(
+      document.getElementById("systolic").value
+    );
 
-    const diastolic =
-      Number(document.getElementById("diastolic").value);
+    const diastolic = Number(
+      document.getElementById("diastolic").value
+    );
 
-    const pulse =
-      Number(document.getElementById("pulse").value);
+    const pulse = Number(
+      document.getElementById("pulse").value
+    );
 
     if (!systolic || !diastolic || !pulse) {
       alert("Bitte alle drei Werte eingeben.");
@@ -314,9 +396,12 @@
     }
 
     if (
-      systolic < 50 || systolic > 300 ||
-      diastolic < 30 || diastolic > 200 ||
-      pulse < 25 || pulse > 250
+      systolic < 50 ||
+      systolic > 300 ||
+      diastolic < 30 ||
+      diastolic > 200 ||
+      pulse < 25 ||
+      pulse > 250
     ) {
       alert("Bitte überprüfe die eingegebenen Werte.");
       return;
@@ -400,33 +485,13 @@
     }
 
     const measurements = getMeasurements();
+
     measurements.splice(index, 1);
 
     setMeasurements(measurements);
 
     clearForm();
     showMeasurements();
-  }
-
-  function getStatus(systolic, diastolic) {
-    if (systolic >= 140 || diastolic >= 90) {
-      return {
-        text: "Hoch",
-        className: "high"
-      };
-    }
-
-    if (systolic >= 130 || diastolic >= 85) {
-      return {
-        text: "Erhöht",
-        className: "elevated"
-      };
-    }
-
-    return {
-      text: "Im Bereich",
-      className: "normal"
-    };
   }
 
   function updateAverage(measurements) {
@@ -438,16 +503,22 @@
     }
 
     const sys =
-      measurements.reduce((sum, m) => sum + Number(m.systolic), 0)
-      / measurements.length;
+      measurements.reduce(
+        (sum, m) => sum + Number(m.systolic),
+        0
+      ) / measurements.length;
 
     const dia =
-      measurements.reduce((sum, m) => sum + Number(m.diastolic), 0)
-      / measurements.length;
+      measurements.reduce(
+        (sum, m) => sum + Number(m.diastolic),
+        0
+      ) / measurements.length;
 
     const pulse =
-      measurements.reduce((sum, m) => sum + Number(m.pulse), 0)
-      / measurements.length;
+      measurements.reduce(
+        (sum, m) => sum + Number(m.pulse),
+        0
+      ) / measurements.length;
 
     document.getElementById("avgSys").textContent =
       Math.round(sys);
@@ -459,9 +530,321 @@
       Math.round(pulse);
   }
 
+  function setupCanvas(canvas) {
+    const rect = canvas.getBoundingClientRect();
+    const ratio = window.devicePixelRatio || 1;
+
+    canvas.width = rect.width * ratio;
+    canvas.height = 240 * ratio;
+
+    const ctx = canvas.getContext("2d");
+
+    ctx.setTransform(
+      ratio,
+      0,
+      0,
+      ratio,
+      0,
+      0
+    );
+
+    return {
+      ctx: ctx,
+      width: rect.width,
+      height: 240
+    };
+  }
+
+  function drawChart(
+    canvas,
+    data,
+    series,
+    minValue,
+    maxValue
+  ) {
+    const setup = setupCanvas(canvas);
+    const ctx = setup.ctx;
+    const width = setup.width;
+    const height = setup.height;
+
+    const left = 42;
+    const right = 12;
+    const top = 15;
+    const bottom = 38;
+
+    const chartWidth =
+      width - left - right;
+
+    const chartHeight =
+      height - top - bottom;
+
+    ctx.clearRect(
+      0,
+      0,
+      width,
+      height
+    );
+
+    ctx.font = "12px Arial";
+    ctx.fillStyle = "#667085";
+    ctx.strokeStyle = "#e2e6eb";
+    ctx.lineWidth = 1;
+
+    const gridLines = 4;
+
+    for (let i = 0; i <= gridLines; i++) {
+      const y =
+        top +
+        (chartHeight / gridLines) * i;
+
+      const value =
+        maxValue -
+        ((maxValue - minValue) / gridLines) * i;
+
+      ctx.beginPath();
+      ctx.moveTo(left, y);
+      ctx.lineTo(width - right, y);
+      ctx.stroke();
+
+      ctx.fillText(
+        Math.round(value),
+        3,
+        y + 4
+      );
+    }
+
+    series.forEach(function(item) {
+      ctx.beginPath();
+      ctx.strokeStyle = item.color;
+      ctx.lineWidth = 3;
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+
+      data.forEach(function(measurement, index) {
+        const x =
+          data.length === 1
+            ? left + chartWidth / 2
+            : left +
+              (chartWidth / (data.length - 1)) *
+              index;
+
+        const value =
+          Number(measurement[item.key]);
+
+        const y =
+          top +
+          ((maxValue - value) /
+            (maxValue - minValue)) *
+            chartHeight;
+
+        if (index === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      });
+
+      ctx.stroke();
+
+      data.forEach(function(measurement, index) {
+        const x =
+          data.length === 1
+            ? left + chartWidth / 2
+            : left +
+              (chartWidth / (data.length - 1)) *
+              index;
+
+        const value =
+          Number(measurement[item.key]);
+
+        const y =
+          top +
+          ((maxValue - value) /
+            (maxValue - minValue)) *
+            chartHeight;
+
+        ctx.beginPath();
+        ctx.fillStyle = item.color;
+        ctx.arc(
+          x,
+          y,
+          4,
+          0,
+          Math.PI * 2
+        );
+        ctx.fill();
+      });
+    });
+
+    const labelIndexes = [];
+
+    if (data.length <= 5) {
+      for (let i = 0; i < data.length; i++) {
+        labelIndexes.push(i);
+      }
+    } else {
+      labelIndexes.push(
+        0,
+        Math.floor((data.length - 1) / 2),
+        data.length - 1
+      );
+    }
+
+    ctx.fillStyle = "#667085";
+    ctx.textAlign = "center";
+
+    labelIndexes.forEach(function(index) {
+      const x =
+        data.length === 1
+          ? left + chartWidth / 2
+          : left +
+            (chartWidth / (data.length - 1)) *
+            index;
+
+      const date =
+        new Date(data[index].date);
+
+      ctx.fillText(
+        date.toLocaleDateString(
+          "de-DE",
+          {
+            day: "2-digit",
+            month: "2-digit"
+          }
+        ),
+        x,
+        height - 12
+      );
+    });
+
+    ctx.textAlign = "start";
+  }
+
+  function drawCharts(measurements) {
+    const bloodWrapper =
+      document.getElementById(
+        "bloodPressureChartWrapper"
+      );
+
+    const bloodEmpty =
+      document.getElementById(
+        "bloodPressureEmpty"
+      );
+
+    const pulseWrapper =
+      document.getElementById(
+        "pulseChartWrapper"
+      );
+
+    const pulseEmpty =
+      document.getElementById(
+        "pulseEmpty"
+      );
+
+    if (measurements.length < 2) {
+      bloodWrapper.style.display = "none";
+      pulseWrapper.style.display = "none";
+
+      bloodEmpty.style.display = "block";
+      pulseEmpty.style.display = "block";
+
+      return;
+    }
+
+    bloodWrapper.style.display = "block";
+    pulseWrapper.style.display = "block";
+
+    bloodEmpty.style.display = "none";
+    pulseEmpty.style.display = "none";
+
+    const data =
+      measurements
+        .slice()
+        .reverse();
+
+    const bloodValues =
+      data.flatMap(function(m) {
+        return [
+          Number(m.systolic),
+          Number(m.diastolic)
+        ];
+      });
+
+    let bloodMin =
+      Math.min(...bloodValues) - 10;
+
+    let bloodMax =
+      Math.max(...bloodValues) + 10;
+
+    bloodMin =
+      Math.max(
+        0,
+        Math.floor(bloodMin / 10) * 10
+      );
+
+    bloodMax =
+      Math.ceil(bloodMax / 10) * 10;
+
+    drawChart(
+      document.getElementById(
+        "bloodPressureChart"
+      ),
+      data,
+      [
+        {
+          key: "systolic",
+          color: "#1565c0"
+        },
+        {
+          key: "diastolic",
+          color: "#ef6c00"
+        }
+      ],
+      bloodMin,
+      bloodMax
+    );
+
+    const pulseValues =
+      data.map(function(m) {
+        return Number(m.pulse);
+      });
+
+    let pulseMin =
+      Math.min(...pulseValues) - 10;
+
+    let pulseMax =
+      Math.max(...pulseValues) + 10;
+
+    pulseMin =
+      Math.max(
+        0,
+        Math.floor(pulseMin / 10) * 10
+      );
+
+    pulseMax =
+      Math.ceil(pulseMax / 10) * 10;
+
+    drawChart(
+      document.getElementById(
+        "pulseChart"
+      ),
+      data,
+      [
+        {
+          key: "pulse",
+          color: "#c62828"
+        }
+      ],
+      pulseMin,
+      pulseMax
+    );
+  }
+
   function showMeasurements() {
     const container =
-      document.getElementById("measurements");
+      document.getElementById(
+        "measurements"
+      );
 
     const count =
       document.getElementById("count");
@@ -470,89 +853,95 @@
       getMeasurements();
 
     updateAverage(measurements);
+    drawCharts(measurements);
 
     count.textContent =
       measurements.length === 1
         ? "1 gespeicherte Messung"
-        : measurements.length + " gespeicherte Messungen";
+        : measurements.length +
+          " gespeicherte Messungen";
 
     if (measurements.length === 0) {
       container.innerHTML =
-        '<div class="empty">Noch keine Messungen gespeichert.</div>';
+        '<div class="empty">' +
+        'Noch keine Messungen gespeichert.' +
+        '</div>';
+
       return;
     }
 
     container.innerHTML =
-      measurements.map(function(measurement, index) {
+      measurements.map(
+        function(measurement, index) {
 
-        const date =
-          new Date(measurement.date);
+          const date =
+            new Date(measurement.date);
 
-        const status =
-          getStatus(
-            Number(measurement.systolic),
-            Number(measurement.diastolic)
-          );
+          return `
+            <div class="measurement">
 
-        return `
-          <div class="measurement">
-
-            <div class="measurement-top">
-
-              <div class="values">
-                ${measurement.systolic} /
-                ${measurement.diastolic}
-                <small>mmHg</small>
+              <div class="measurement-top">
+                <div class="values">
+                  ${measurement.systolic} /
+                  ${measurement.diastolic}
+                  <small>mmHg</small>
+                </div>
               </div>
 
-              <span class="badge ${status.className}">
-                ${status.text}
-              </span>
+              <div class="pulse">
+                ❤️ Puls:
+                ${measurement.pulse} /min
+              </div>
+
+              <div class="date">
+                ${date.toLocaleString("de-DE")}
+              </div>
+
+              <div class="actions">
+
+                <button
+                  class="edit"
+                  onclick="editMeasurement(${index})">
+                  ✏️ Bearbeiten
+                </button>
+
+                <button
+                  class="delete"
+                  onclick="deleteMeasurement(${index})">
+                  🗑️ Löschen
+                </button>
+
+              </div>
 
             </div>
-
-            <div class="pulse">
-              ❤️ Puls: ${measurement.pulse} /min
-            </div>
-
-            <div class="date">
-              ${date.toLocaleString("de-DE")}
-            </div>
-
-            <div class="actions">
-
-              <button
-                class="edit"
-                onclick="editMeasurement(${index})">
-                ✏️ Bearbeiten
-              </button>
-
-              <button
-                class="delete"
-                onclick="deleteMeasurement(${index})">
-                🗑️ Löschen
-              </button>
-
-            </div>
-
-          </div>
-        `;
-      }).join("");
+          `;
+        }
+      ).join("");
   }
 
   showMeasurements();
 
+  window.addEventListener(
+    "resize",
+    function() {
+      drawCharts(getMeasurements());
+    }
+  );
+
   if ("serviceWorker" in navigator) {
-    window.addEventListener("load", function() {
-      navigator.serviceWorker
-        .register("./service-worker.js")
-        .catch(function(error) {
-          console.error(
-            "Service Worker registration failed:",
-            error
-          );
-        });
-    });
+    window.addEventListener(
+      "load",
+      function() {
+        navigator.serviceWorker
+          .register("./service-worker.js")
+          .catch(function(error) {
+            console.error(
+              "Service Worker registration failed:",
+              error
+            );
+          });
+      }
+    );
   }
 </script>
 
