@@ -576,7 +576,6 @@ h2{letter-spacing:-.35px}
   .dw-values strong{font-size:32px!important}
 }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head><body>
 <h1>Blutdruck-Tagebuch – Arzt-Bericht</h1>
 <div>${p.name?`<b>${esc(p.name)}</b>`:""}${p.birth?` · Geburtsdatum: ${new Date(p.birth+"T00:00").toLocaleDateString("de-DE")}`:""}</div>
@@ -587,132 +586,7 @@ h2{letter-spacing:-.35px}
 <table><thead><tr><th>Datum / Zeit</th><th>SYS/DIA</th><th>Puls</th><th>Situation</th><th>Symptome</th><th>Medikament</th><th>Notiz</th></tr></thead><tbody>
 ${ms.map(m=>`<tr${m.favorite?' style="font-weight:bold"':""}><td>${new Date(m.date).toLocaleString("de-DE")}${m.favorite?" ⭐":""}</td><td>${m.systolic}/${m.diastolic}</td><td>${m.pulse}</td><td>${esc(m.situation||"")}</td><td>${esc((m.symptoms||[]).join(", "))}</td><td>${esc([m.medication,m.medicationNote].filter(Boolean).join(" · "))}</td><td>${esc(m.note||"")}</td></tr>`).join("")}
 </tbody></table><p class="small">Hinweis: Dieser Bericht dokumentiert eingegebene Messwerte und stellt keine medizinische Diagnose dar.</p>
-<script>window.onload=()=>{setTimeout(()=>window.print(),250)};<\/script>
-<script id="druckwert-cloud-sync">
-(() => {
-  const DW_SUPABASE_URL = "https://poxctipnlfbsamyovvpb.supabase.co";
-  const DW_SUPABASE_KEY = "sb_publishable_NbbSB295ISWM9WXNKaPEHA_1a4XGT0n";
-  const DW_KEYS = [
-    "bloodPressureMeasurements","bloodPressureWeights","bloodPressureReminders",
-    "bloodPressureProfile","bloodPressureMedicationList","bloodPressureDoctorVisits",
-    "bloodPressureCustomSymptoms","bloodPressureLastBackup"
-  ];
-  const DW_SYNC_STAMP = "bloodPressureCloudSyncStamp";
-  let client = null, syncTimer = null, applyingCloud = false;
-
-  function status(t){ const e=document.getElementById("cloudSyncStatus"); if(e)e.textContent=t; }
-  function collect(){
-    const data={};
-    DW_KEYS.forEach(k=>{ const v=localStorage.getItem(k); if(v!==null) data[k]=v; });
-    data.__stamp=localStorage.getItem(DW_SYNC_STAMP)||new Date().toISOString();
-    return data;
-  }
-  function parseArray(raw){ try { const x=JSON.parse(raw||"[]"); return Array.isArray(x)?x:[]; } catch { return []; } }
-  function measurementKey(x){
-    return String(x.id ?? [x.date,x.time,x.systolic,x.diastolic,x.pulse].join("|"));
-  }
-  function mergeMeasurements(localRaw, cloudRaw){
-    const map=new Map();
-    [...parseArray(cloudRaw),...parseArray(localRaw)].forEach(x=>map.set(measurementKey(x),x));
-    return JSON.stringify([...map.values()]);
-  }
-  function apply(data){
-    if(!data || typeof data!=="object") return;
-    applyingCloud=true;
-    try{
-      DW_KEYS.forEach(k=>{
-        if(data[k]===undefined) return;
-        if(k==="bloodPressureMeasurements"){
-          localStorage.setItem(k,mergeMeasurements(localStorage.getItem(k),data[k]));
-        } else if(localStorage.getItem(k)===null) {
-          localStorage.setItem(k,data[k]);
-        }
-      });
-      localStorage.setItem(DW_SYNC_STAMP,new Date().toISOString());
-    } finally { applyingCloud=false; }
-  }
-  async function user(){
-    if(!client) return null;
-    const {data}=await client.auth.getUser();
-    return data?.user||null;
-  }
-  async function push(){
-    const u=await user(); if(!u) return;
-    localStorage.setItem(DW_SYNC_STAMP,new Date().toISOString());
-    const {error}=await client.from("druckwert_sync").upsert(
-      {user_id:u.id,data:collect(),updated_at:new Date().toISOString()},
-      {onConflict:"user_id"}
-    );
-    if(error) throw error;
-  }
-  async function pullMergePush(){
-    const u=await user(); if(!u) return;
-    status("Synchronisiere …");
-    const {data,error}=await client.from("druckwert_sync").select("data,updated_at").eq("user_id",u.id).maybeSingle();
-    if(error) throw error;
-    if(data?.data) apply(data.data);
-    await push();
-    status("Synchronisiert · "+new Date().toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}));
-  }
-  function schedule(){
-    if(applyingCloud) return;
-    clearTimeout(syncTimer);
-    syncTimer=setTimeout(()=>pullMergePush().catch(e=>status("Sync-Fehler: "+e.message)),900);
-  }
-  function paint(u){
-    const a=document.getElementById("cloudLoggedOut"), b=document.getElementById("cloudLoggedIn"), c=document.getElementById("cloudUser");
-    if(a)a.style.display=u?"none":"block";
-    if(b)b.style.display=u?"block":"none";
-    if(c)c.textContent=u?u.email:"";
-    status(u?"Angemeldet · Synchronisation aktiv":"Nicht angemeldet");
-  }
-  window.dwCloudLogin=async()=>{
-    try{
-      const email=document.getElementById("cloudEmail").value.trim();
-      const password=document.getElementById("cloudPassword").value;
-      status("Anmeldung …");
-      const {data,error}=await client.auth.signInWithPassword({email,password});
-      if(error) throw error;
-      paint(data.user); await pullMergePush(); location.reload();
-    }catch(e){status("Anmeldung fehlgeschlagen: "+e.message)}
-  };
-  window.dwCloudRegister=async()=>{
-    try{
-      const email=document.getElementById("cloudEmail").value.trim();
-      const password=document.getElementById("cloudPassword").value;
-      if(password.length<6){status("Passwort muss mindestens 6 Zeichen haben.");return;}
-      status("Registrierung …");
-      const {data,error}=await client.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname}});
-      if(error) throw error;
-      if(data.session){paint(data.user);await pullMergePush();location.reload();}
-      else status("Bestätigungs-E-Mail gesendet. Bitte E-Mail bestätigen.");
-    }catch(e){status("Registrierung fehlgeschlagen: "+e.message)}
-  };
-  window.dwCloudLogout=async()=>{ await client.auth.signOut(); paint(null); };
-  window.dwCloudSyncNow=async()=>{ try{await pullMergePush(); location.reload()}catch(e){status("Sync-Fehler: "+e.message)} };
-
-  document.addEventListener("DOMContentLoaded", async()=>{
-    if(!window.supabase){status("Cloud-Bibliothek konnte nicht geladen werden.");return;}
-    client=window.supabase.createClient(DW_SUPABASE_URL,DW_SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-    const {data:{session}}=await client.auth.getSession();
-    paint(session?.user||null);
-    if(session?.user) pullMergePush().catch(e=>status("Sync-Fehler: "+e.message));
-    client.auth.onAuthStateChange((event,session)=>{paint(session?.user||null);});
-    const originalSet=Storage.prototype.setItem;
-    if(!Storage.prototype.__dwWrapped){
-      Storage.prototype.setItem=function(k,v){
-        originalSet.call(this,k,v);
-        if(this===localStorage && DW_KEYS.includes(k)) schedule();
-      };
-      Storage.prototype.__dwWrapped=true;
-    }
-    window.addEventListener("online",()=>pullMergePush().catch(()=>{}));
-    document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")pullMergePush().catch(()=>{})});
-  });
-})();
-</script>
-
-</body></html>`;
+<script>window.onload=()=>{setTimeout(()=>window.print(),250)};<\/script></body></html>`;
 const w=window.open("","_blank");
 if(!w){alert("Das Druckfenster wurde blockiert. Bitte Pop-ups für diese App erlauben.");return}
 w.document.open();w.document.write(report);w.document.close();
@@ -774,7 +648,6 @@ window.addEventListener("appinstalled",()=>{deferredInstallPrompt=null;updateIns
 setTimeout(()=>{updateInstallUI();showWelcome(false)},250);
 bindChart($("bloodChart"),$("bloodTip"),"blood");bindChart($("pulseChart"),$("pulseTip"),"pulse");loadReminders();loadMedicationSelect();renderCustomSymptomChecks();renderSeries();renderBackupStatus();renderBackupWarning();refreshAll();addEventListener("resize",()=>{if($("page-home").classList.contains("active"))renderHome();if($("page-analysis").classList.contains("active"))refreshAnalysis()});if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js").catch(console.error));
 </script>
-
 <script id="druckwert-cloud-sync">
 (() => {
   const DW_SUPABASE_URL = "https://poxctipnlfbsamyovvpb.supabase.co";
@@ -898,6 +771,5 @@ bindChart($("bloodChart"),$("bloodTip"),"blood");bindChart($("pulseChart"),$("pu
   });
 })();
 </script>
-
 </body>
 </html>
