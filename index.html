@@ -188,7 +188,64 @@ input,select,textarea{background:var(--soft)!important;color:var(--text)!importa
 <style>
 .cat-symbol{display:inline-grid;place-items:center;width:29px;height:29px;border-radius:8px;background:var(--soft);color:var(--primary);font-size:16px;font-weight:900;margin-right:8px;vertical-align:middle}
 .more-category:nth-of-type(2) .cat-symbol{color:#ff4655}.more-category:nth-of-type(3) .cat-symbol{color:#ffc12e}.more-category:nth-of-type(4) .cat-symbol{color:#45d27a}
-</style></head>
+</style>
+<style id="druckwert-final-finesse">
+/* Einheitliche Typografie, Radien und Abstände */
+:root{--dw-radius:16px;--dw-radius-small:11px}
+.card{border-radius:var(--dw-radius)!important}
+input,select,textarea{border-radius:var(--dw-radius-small)!important}
+button{font-family:inherit}
+h2{letter-spacing:-.35px}
+.form-label{letter-spacing:.05px}
+
+/* Mehr: Emoji-Kategorien sicher durch einheitliche CSS-App-Icons ersetzen */
+#page-more .more-category-title{
+  display:flex!important;align-items:center!important;gap:11px!important;
+  padding:13px 14px!important;min-height:62px!important
+}
+#page-more .dw-cat-icon{
+  flex:0 0 34px;width:34px;height:34px;border-radius:10px;
+  display:grid;place-items:center;background:var(--soft);
+  color:var(--primary);font-size:18px;font-weight:900;line-height:1
+}
+#page-more .more-category:nth-of-type(2) .dw-cat-icon{color:#ff4d61}
+#page-more .more-category:nth-of-type(3) .dw-cat-icon{color:#ffc43d}
+#page-more .more-category:nth-of-type(4) .dw-cat-icon{color:#42d77d}
+#page-more .more-category:nth-of-type(5) .dw-cat-icon{color:#9daeff}
+#page-more .dw-cat-label{flex:1}
+#page-more .dw-cat-arrow{color:var(--muted);font-size:21px;font-weight:900}
+
+/* Eingabe: gleichmäßigere Höhen */
+#page-add input,#page-add select{min-height:45px!important}
+#page-add textarea{min-height:70px!important}
+#page-add .check{border-radius:999px!important}
+#page-add .primary,#page-add .secondary{border-radius:999px!important}
+
+/* Auswertung */
+#page-analysis .stat,#page-analysis .summary-box,#page-analysis .substat{
+  border-radius:13px!important
+}
+#page-analysis canvas{max-height:260px}
+
+/* Verlauf: kompakte Aktionsleiste */
+#page-history .measurement{border-radius:14px!important}
+#page-history .measurement .actions button{
+  border-radius:10px!important;font-weight:700!important
+}
+#page-history .calendar-day{border-radius:10px!important}
+
+/* Navigation */
+.bottom-nav{backdrop-filter:blur(12px)}
+.nav-btn{transition:transform .12s ease,color .12s ease}
+.nav-btn:active{transform:scale(.94)}
+
+/* Kleine Geräte */
+@media(max-width:380px){
+  #page-more .more-category-title{font-size:13px!important}
+  .dw-values strong{font-size:32px!important}
+}
+</style>
+</head>
 <body>
 <header><button id="themeButton" onclick="toggleTheme()">🌙</button><div class="brand"><span class="brand-mark">DW</span><h1>Druck<span>Wert</span></h1></div><p id="headerSub">Dein Blutdruck im Blick</p></header>
 <main>
@@ -223,44 +280,7 @@ input,select,textarea{background:var(--soft)!important;color:var(--text)!importa
 </section>
 
 <section id="page-more" class="page">
-<div class="card"><h2>Einstellungen & Daten <span class="release-badge">Version 1.0.0</span></h2><div class="more-category"><button class="more-category-title" onclick="toggleMoreCategory(this)"><span class="cat-icon">🩺</span><span class="cat-name">Arzt & Medikamente</span><span class="cat-arrow">›</span></button><div class="more-category-body"><button class="menu-item" onclick="toggleExtra('reportBox')"><span class="menu-icon">📄</span><span class="menu-text"><strong>Arzt-Bericht</strong><small>Bericht für den gewählten Zeitraum</small></span><span class="arrow">›</span></button>
-<div id="reportBox" class="section-hidden"><button class="primary" onclick="makeReport()">Bericht erstellen</button><button id="copyReportButton" class="secondary" style="display:none" onclick="copyReport()">📋 Bericht kopieren</button><button id="shareReportButton" class="secondary" style="display:none" onclick="shareReport()">📤 Bericht teilen</button><button id="printReportButton" class="secondary" style="display:none" onclick="printReport()">📄 Als PDF speichern</button><div id="report" class="report" style="display:none;margin-top:9px"></div></div>
-
-<button class="menu-item" onclick="toggleExtra('doctorVisitBox');renderDoctorVisits()"><span class="menu-icon">🩺</span><span class="menu-text"><strong>Arzttermine & Arztbesuche</strong><small>Termin planen und Besuche dokumentieren</small></span><span class="arrow">›</span></button>
-<div id="doctorVisitBox" class="section-hidden"><div class="setting-row"><input id="visitDate" type="datetime-local"><input id="visitDoctor" maxlength="100" placeholder="Arzt / Praxis (optional)"><input id="visitReason" maxlength="150" placeholder="Anlass"><textarea id="visitNote" maxlength="500" placeholder="Notiz / was wurde besprochen?"></textarea><button class="primary" onclick="saveDoctorVisit()">Arzttermin speichern</button><button class="secondary" onclick="prepareDoctorReport()">📄 Bericht für nächsten Termin vorbereiten</button><div id="doctorVisitList"></div></div></div>
-
-<button class="menu-item" onclick="toggleExtra('profileBox');loadProfile()"><span class="menu-icon">👤</span><span class="menu-text"><strong>Persönliche Angaben</strong><small>Name und Geburtsdatum für den Arzt-Bericht</small></span><span class="arrow">›</span></button>
-<div id="profileBox" class="section-hidden"><div class="setting-row"><div class="profile-grid"><input id="profileName" placeholder="Name"><input id="profileBirth" type="date"></div><button class="primary" onclick="saveProfile()">Angaben speichern</button></div></div>
-
-<button class="menu-item" onclick="toggleExtra('medListBox');renderMedicationList()"><span class="menu-icon">💊</span><span class="menu-text"><strong>Medikamentenliste</strong><small>Medikamente einmal hinterlegen</small></span><span class="arrow">›</span></button>
-<div id="medListBox" class="section-hidden"><div class="setting-row"><div class="weight-row"><input id="newMedication" maxlength="100" placeholder="Medikament hinzufügen"><button onclick="addMedication()">Hinzufügen</button></div><div id="medicationList" class="med-list"></div></div></div>
-
-</div></div><div class="more-category"><button class="more-category-title" onclick="toggleMoreCategory(this)"><span class="cat-icon">📊</span><span class="cat-name">Auswertungen</span><span class="cat-arrow">›</span></button><div class="more-category-body"><button class="menu-item" onclick="toggleExtra('summaryBox');renderPeriodSummary()"><span class="menu-icon">📆</span><span class="menu-text"><strong>Wochen- & Monatsübersicht</strong><small>Durchschnitt und Anzahl der Messungen</small></span><span class="arrow">›</span></button><div id="summaryBox" class="section-hidden"><div id="periodSummary" class="summary-grid"></div></div>
-<button class="menu-item" onclick="toggleExtra('compareBox');renderComparison()"><span class="menu-icon">↔️</span><span class="menu-text"><strong>Zeiträume vergleichen</strong><small>Letzte 7 Tage mit den 7 Tagen davor</small></span><span class="arrow">›</span></button>
-<div id="compareBox" class="section-hidden"><div id="comparison" class="compare-grid"></div></div>
-
-<button class="menu-item" onclick="toggleExtra('longTermBox');renderLongTerm()"><span class="menu-icon">📊</span><span class="menu-text"><strong>Wochen- & Monatsdiagramme</strong><small>Langfristige Durchschnittswerte</small></span><span class="arrow">›</span></button>
-<div id="longTermBox" class="section-hidden"><div class="setting-row"><div class="mini-grid"><div class="mini-box"><span class="muted">7 Tage</span><strong id="lt7">–</strong></div><div class="mini-box"><span class="muted">30 Tage</span><strong id="lt30">–</strong></div></div><canvas id="longTermChart" style="margin-top:10px"></canvas></div></div>
-
-<button class="menu-item" onclick="toggleExtra('daypartBox');renderDayparts()"><span class="menu-icon">🕐</span><span class="menu-text"><strong>Uhrzeit-Auswertung</strong><small>Morgen, Mittag, Abend und Nacht</small></span><span class="arrow">›</span></button>
-<div id="daypartBox" class="section-hidden"><div id="daypartStats" class="mini-grid"></div></div>
-
-<button class="menu-item" onclick="toggleExtra('weightBox');renderWeights()"><span class="menu-icon">⚖️</span><span class="menu-text"><strong>Gewicht</strong><small>Gewicht separat dokumentieren</small></span><span class="arrow">›</span></button><div id="weightBox" class="section-hidden"><div class="weight-row"><input id="weightInput" type="number" step="0.1" inputmode="decimal" placeholder="Gewicht in kg"><button onclick="saveWeight()">Speichern</button></div><div id="weightList"></div></div>
-<button class="menu-item" onclick="toggleExtra('weightChartBox');renderWeightChart()"><span class="menu-icon">📈</span><span class="menu-text"><strong>Gewichtskurve</strong><small>Gewichtsverlauf als Diagramm</small></span><span class="arrow">›</span></button>
-<div id="weightChartBox" class="section-hidden"><div id="weightChartEmpty" class="empty">Mindestens 2 Gewichtseinträge benötigt.</div><canvas id="weightChart" style="display:none"></canvas></div>
-
-<button class="menu-item" onclick="toggleExtra('combinedBox');renderCombined()"><span class="menu-icon">📉</span><span class="menu-text"><strong>Gewicht & Blutdruck</strong><small>Verläufe im gleichen Zeitraum betrachten</small></span><span class="arrow">›</span></button>
-<div id="combinedBox" class="section-hidden"><div class="setting-row"><b>Blutdruck</b><canvas id="combinedBP"></canvas><b>Gewicht</b><canvas id="combinedWeight"></canvas></div></div>
-
-</div></div><div class="more-category"><button class="more-category-title" onclick="toggleMoreCategory(this)"><span class="cat-icon">📝</span><span class="cat-name">Dokumentation</span><span class="cat-arrow">›</span></button><div class="more-category-body"><button class="menu-item" onclick="toggleExtra('customSymptomsBox');renderCustomSymptoms()"><span class="menu-icon">📝</span><span class="menu-text"><strong>Eigene Symptome</strong><small>Häufige Symptome selbst anlegen</small></span><span class="arrow">›</span></button>
-<div id="customSymptomsBox" class="section-hidden"><div class="setting-row"><div class="custom-symptom-row"><input id="newCustomSymptom" maxlength="80" placeholder="Symptom hinzufügen"><button onclick="addCustomSymptom()">Hinzufügen</button></div><div id="customSymptomList" class="med-list"></div></div></div>
-
-<button class="menu-item" onclick="toggleExtra('reminderBox')"><span class="menu-icon">🔔</span><span class="menu-text"><strong>Mess-Erinnerungen</strong><small>Morgen- und Abendzeiten speichern</small></span><span class="arrow">›</span></button><div id="reminderBox" class="section-hidden"><div class="setting-row"><label>Morgens</label><input id="reminderMorning" type="time" value="07:00"><label>Abends</label><input id="reminderEvening" type="time" value="19:00"><button class="primary" onclick="saveReminders()">Erinnerungszeiten speichern</button><div class="description" style="margin-top:8px">Die Zeiten werden gespeichert. Hintergrund-Benachrichtigungen hängen bei einer Web-App vom Gerät und Browser ab.</div></div></div>
-
-</div></div><div class="more-category"><button class="more-category-title" onclick="toggleMoreCategory(this)"><span class="cat-icon">💾</span><span class="cat-name">Daten & Backup</span><span class="cat-arrow">›</span></button><div class="more-category-body"><div id="backupWarning"></div><div id="backupStatus" class="backup-status"></div><button class="menu-item" onclick="exportCSV()"><span class="menu-icon">📊</span><span class="menu-text"><strong>Daten exportieren (CSV)</strong><small>Messungen für Excel & Tabellen</small></span><span class="arrow">›</span></button>
-<button class="menu-item" onclick="createBackup()"><span class="menu-icon">💾</span><span class="menu-text"><strong>Backup erstellen</strong><small>Messungen und Notizen sichern</small></span><span class="arrow">›</span></button>
-<button class="menu-item" onclick="document.getElementById('backupFile').click()"><span class="menu-icon">📥</span><span class="menu-text"><strong>Backup wiederherstellen</strong><small>JSON-Sicherung einlesen</small></span><span class="arrow">›</span></button><input id="backupFile" type="file" accept=".json,application/json" style="display:none" onchange="restoreBackup(event)">
-</div></div><div class="more-category"><button class="more-category-title" onclick="toggleMoreCategory(this)"><span class="cat-icon">⚙️</span><span class="cat-name">Einstellungen & Datenschutz</span><span class="cat-arrow">›</span></button><div class="more-category-body"><button class="menu-item" onclick="toggleTheme()"><span class="menu-icon">🌙</span><span class="menu-text"><strong>Hell / Dunkel</strong><small>Darstellung der App ändern</small></span><span class="arrow">›</span></button>
+<div class="card"><h2>Einstellungen & Daten <span class="release-badge">Version 1.0.0</span></h2><div class="more-category"><button class="more-category-title" onclick="toggleMoreCategory(this)"><span class="dw-cat-icon">⚙</span><span class="dw-cat-label">Einstellungen & Datenschutz</span><span class="dw-cat-arrow">›</span></span><span class="cat-arrow">›</span></button><div class="more-category-body"><button class="menu-item" onclick="toggleTheme()"><span class="menu-icon">🌙</span><span class="menu-text"><strong>Hell / Dunkel</strong><small>Darstellung der App ändern</small></span><span class="arrow">›</span></button>
 <button class="menu-item" onclick="togglePrivacyScreen()"><span class="menu-icon">🔐</span><span class="menu-text"><strong>Datenschutzmodus</strong><small>App-Inhalt auf Wunsch verdecken</small></span><span class="arrow">›</span></button>
 <button class="menu-item" onclick="toggleExtra('privacyInfoBox')"><span class="menu-icon">🔐</span><span class="menu-text"><strong>Datenschutz & Hinweise</strong><small>Speicherung, Backup und medizinischer Hinweis</small></span><span class="arrow">›</span></button>
 <div id="privacyInfoBox" class="section-hidden"><div class="info-box"><b>Datenschutz</b><br>Die in dieser App eingegebenen Messungen werden lokal im Browser bzw. auf diesem Gerät gespeichert. Die App überträgt diese Tagebuchdaten nicht automatisch an ein Benutzerkonto oder einen Cloud-Dienst. Export- und Backup-Dateien können Gesundheitsdaten im Klartext enthalten und sollten geschützt aufbewahrt werden.</div><div class="info-box"><b>Medizinischer Hinweis</b><br>Diese App ist ein persönliches Dokumentationswerkzeug. Sie stellt keine Diagnose, ersetzt keine ärztliche Untersuchung und gibt keine individuelle Therapieempfehlung.</div></div>
@@ -475,7 +495,64 @@ input,select,textarea{background:var(--soft)!important;color:var(--text)!importa
 <style>
 .cat-symbol{display:inline-grid;place-items:center;width:29px;height:29px;border-radius:8px;background:var(--soft);color:var(--primary);font-size:16px;font-weight:900;margin-right:8px;vertical-align:middle}
 .more-category:nth-of-type(2) .cat-symbol{color:#ff4655}.more-category:nth-of-type(3) .cat-symbol{color:#ffc12e}.more-category:nth-of-type(4) .cat-symbol{color:#45d27a}
-</style></head><body>
+</style>
+<style id="druckwert-final-finesse">
+/* Einheitliche Typografie, Radien und Abstände */
+:root{--dw-radius:16px;--dw-radius-small:11px}
+.card{border-radius:var(--dw-radius)!important}
+input,select,textarea{border-radius:var(--dw-radius-small)!important}
+button{font-family:inherit}
+h2{letter-spacing:-.35px}
+.form-label{letter-spacing:.05px}
+
+/* Mehr: Emoji-Kategorien sicher durch einheitliche CSS-App-Icons ersetzen */
+#page-more .more-category-title{
+  display:flex!important;align-items:center!important;gap:11px!important;
+  padding:13px 14px!important;min-height:62px!important
+}
+#page-more .dw-cat-icon{
+  flex:0 0 34px;width:34px;height:34px;border-radius:10px;
+  display:grid;place-items:center;background:var(--soft);
+  color:var(--primary);font-size:18px;font-weight:900;line-height:1
+}
+#page-more .more-category:nth-of-type(2) .dw-cat-icon{color:#ff4d61}
+#page-more .more-category:nth-of-type(3) .dw-cat-icon{color:#ffc43d}
+#page-more .more-category:nth-of-type(4) .dw-cat-icon{color:#42d77d}
+#page-more .more-category:nth-of-type(5) .dw-cat-icon{color:#9daeff}
+#page-more .dw-cat-label{flex:1}
+#page-more .dw-cat-arrow{color:var(--muted);font-size:21px;font-weight:900}
+
+/* Eingabe: gleichmäßigere Höhen */
+#page-add input,#page-add select{min-height:45px!important}
+#page-add textarea{min-height:70px!important}
+#page-add .check{border-radius:999px!important}
+#page-add .primary,#page-add .secondary{border-radius:999px!important}
+
+/* Auswertung */
+#page-analysis .stat,#page-analysis .summary-box,#page-analysis .substat{
+  border-radius:13px!important
+}
+#page-analysis canvas{max-height:260px}
+
+/* Verlauf: kompakte Aktionsleiste */
+#page-history .measurement{border-radius:14px!important}
+#page-history .measurement .actions button{
+  border-radius:10px!important;font-weight:700!important
+}
+#page-history .calendar-day{border-radius:10px!important}
+
+/* Navigation */
+.bottom-nav{backdrop-filter:blur(12px)}
+.nav-btn{transition:transform .12s ease,color .12s ease}
+.nav-btn:active{transform:scale(.94)}
+
+/* Kleine Geräte */
+@media(max-width:380px){
+  #page-more .more-category-title{font-size:13px!important}
+  .dw-values strong{font-size:32px!important}
+}
+</style>
+</head><body>
 <h1>Blutdruck-Tagebuch – Arzt-Bericht</h1>
 <div>${p.name?`<b>${esc(p.name)}</b>`:""}${p.birth?` · Geburtsdatum: ${new Date(p.birth+"T00:00").toLocaleDateString("de-DE")}`:""}</div>
 <div class="small">Erstellt am ${new Date().toLocaleString("de-DE")} · ${esc(periodName())}</div>
