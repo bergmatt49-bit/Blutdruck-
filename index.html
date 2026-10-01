@@ -152,7 +152,32 @@ function selectCalendarDate(y,m,d){historyDate=new Date(y,m,d).toDateString();$(
 function clearCalendarDate(){historyDate=null;$("clearCalendarFilter").style.display="none";renderHistory()}
 function renderCalendar(){if(!$("calendarGrid"))return;const y=calendarMonth.getFullYear(),m=calendarMonth.getMonth(),first=new Date(y,m,1),days=new Date(y,m+1,0).getDate();$("calendarTitle").textContent=first.toLocaleDateString("de-DE",{month:"long",year:"numeric"});const names=["Mo","Di","Mi","Do","Fr","Sa","So"];let h=names.map(x=>`<div class="cal-week">${x}</div>`).join(""),offset=(first.getDay()+6)%7;for(let i=0;i<offset;i++)h+="<div></div>";const ms=getMeasurements();for(let d=1;d<=days;d++){const dt=new Date(y,m,d),has=ms.some(x=>new Date(x.date).toDateString()===dt.toDateString()),sel=historyDate===dt.toDateString();h+=`<button class="cal-day${has?" has":""}${sel?" selected":""}" onclick="selectCalendarDate(${y},${m},${d})">${d}${has?'<span class="cal-dot"></span>':""}</button>`}$("calendarGrid").innerHTML=h}
 async function shareReport(){if(!$("report").textContent)makeReport();const txt=$("report").textContent;try{if(navigator.share)await navigator.share({title:"Blutdruck-Bericht",text:txt});else{await navigator.clipboard.writeText(txt);alert("Teilen wird hier nicht unterstützt. Der Bericht wurde kopiert.")}}catch(e){}}
-function printReport(){const ms=filtered(getMeasurements()).slice().sort((a,b)=>new Date(a.date)-new Date(b.date));if(!ms.length){alert("Im gewählten Zeitraum gibt es keine Messungen.");return}const p=getProfile(),mo=ms.filter(m=>{const h=new Date(m.date).getHours();return h>=5&&h<10}),ev=ms.filter(m=>{const h=new Date(m.date).getHours();return h>=18&&h<23});$("pdfSheet").innerHTML=`<h1>Blutdruck-Tagebuch – Arzt-Bericht</h1><div>${p.name?`<b>${esc(p.name)}</b>`:""}${p.birth?` · Geburtsdatum: ${new Date(p.birth+"T00:00").toLocaleDateString("de-DE")}`:""}</div><div class="pdf-small">Erstellt am ${new Date().toLocaleString("de-DE")} · ${esc(periodName())}</div><div class="pdf-summary"><div class="pdf-box"><b>Ø SYS</b><br>${avg(ms,"systolic")} mmHg</div><div class="pdf-box"><b>Ø DIA</b><br>${avg(ms,"diastolic")} mmHg</div><div class="pdf-box"><b>Ø Puls</b><br>${avg(ms,"pulse")} /min</div><div class="pdf-box"><b>Messungen</b><br>${ms.length}</div></div><div class="pdf-small">Morgens: ${esc(fmtAvg(mo))} · Abends: ${esc(fmtAvg(ev))}</div><h2>Einzelmessungen</h2><table><thead><tr><th>Datum / Zeit</th><th>SYS/DIA</th><th>Puls</th><th>Situation</th><th>Symptome</th><th>Medikament</th><th>Notiz</th></tr></thead><tbody>${ms.map(m=>`<tr${m.favorite?' style="font-weight:bold"':""}><td>${new Date(m.date).toLocaleString("de-DE")}${m.favorite?" ⭐":""}</td><td>${m.systolic}/${m.diastolic}</td><td>${m.pulse}</td><td>${esc(m.situation||"")}</td><td>${esc((m.symptoms||[]).join(", "))}</td><td>${esc([m.medication,m.medicationNote].filter(Boolean).join(" · "))}</td><td>${esc(m.note||"")}</td></tr>`).join("")}</tbody></table><p class="pdf-small">Hinweis: Dieser Bericht dokumentiert eingegebene Messwerte und stellt keine medizinische Diagnose dar.</p>`;setTimeout(()=>window.print(),50)}
+function printReport(){
+const ms=filtered(getMeasurements()).slice().sort((a,b)=>new Date(a.date)-new Date(b.date));
+if(!ms.length){alert("Im gewählten Zeitraum gibt es keine Messungen.");return}
+const p=getProfile(),mo=ms.filter(m=>{const h=new Date(m.date).getHours();return h>=5&&h<10}),ev=ms.filter(m=>{const h=new Date(m.date).getHours();return h>=18&&h<23});
+const report=`<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Blutdruck-Arzt-Bericht</title><style>
+@page{size:A4 portrait;margin:12mm}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff;color:#111;font-family:Arial,sans-serif}
+body{font-size:10px}h1{font-size:20px;margin:0 0 4px}h2{font-size:14px;margin:14px 0 6px}
+.small{font-size:9px;color:#444}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0}.box{border:1px solid #bbb;padding:7px}.box b{font-size:11px}
+table{width:100%;border-collapse:collapse;font-size:8.5px}thead{display:table-header-group}tr{break-inside:avoid;page-break-inside:avoid}th,td{border:1px solid #bbb;padding:3px;text-align:left;vertical-align:top}
+@media print{html,body{width:auto;height:auto;overflow:visible}body{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+</style></head><body>
+<h1>Blutdruck-Tagebuch – Arzt-Bericht</h1>
+<div>${p.name?`<b>${esc(p.name)}</b>`:""}${p.birth?` · Geburtsdatum: ${new Date(p.birth+"T00:00").toLocaleDateString("de-DE")}`:""}</div>
+<div class="small">Erstellt am ${new Date().toLocaleString("de-DE")} · ${esc(periodName())}</div>
+<div class="summary"><div class="box"><b>Ø SYS</b><br>${avg(ms,"systolic")} mmHg</div><div class="box"><b>Ø DIA</b><br>${avg(ms,"diastolic")} mmHg</div><div class="box"><b>Ø Puls</b><br>${avg(ms,"pulse")} /min</div><div class="box"><b>Messungen</b><br>${ms.length}</div></div>
+<div class="small">Morgens: ${esc(fmtAvg(mo))} · Abends: ${esc(fmtAvg(ev))}</div>
+<h2>Einzelmessungen</h2>
+<table><thead><tr><th>Datum / Zeit</th><th>SYS/DIA</th><th>Puls</th><th>Situation</th><th>Symptome</th><th>Medikament</th><th>Notiz</th></tr></thead><tbody>
+${ms.map(m=>`<tr${m.favorite?' style="font-weight:bold"':""}><td>${new Date(m.date).toLocaleString("de-DE")}${m.favorite?" ⭐":""}</td><td>${m.systolic}/${m.diastolic}</td><td>${m.pulse}</td><td>${esc(m.situation||"")}</td><td>${esc((m.symptoms||[]).join(", "))}</td><td>${esc([m.medication,m.medicationNote].filter(Boolean).join(" · "))}</td><td>${esc(m.note||"")}</td></tr>`).join("")}
+</tbody></table><p class="small">Hinweis: Dieser Bericht dokumentiert eingegebene Messwerte und stellt keine medizinische Diagnose dar.</p>
+<script>window.onload=()=>{setTimeout(()=>window.print(),250)};<\/script></body></html>`;
+const w=window.open("","_blank");
+if(!w){alert("Das Druckfenster wurde blockiert. Bitte Pop-ups für diese App erlauben.");return}
+w.document.open();w.document.write(report);w.document.close();
+}
 function getWeights(){try{const x=JSON.parse(localStorage.getItem(WEIGHT_KEY));return Array.isArray(x)?x:[]}catch(e){return[]}}
 function saveWeight(){const v=parseFloat(String($("weightInput").value).replace(",","."));if(!v||v<20||v>400){alert("Bitte ein gültiges Gewicht eingeben.");return}const x=getWeights();x.unshift({value:v,date:new Date().toISOString()});localStorage.setItem(WEIGHT_KEY,JSON.stringify(x));$("weightInput").value="";renderWeights()}
 function deleteWeight(i){const x=getWeights();x.splice(i,1);localStorage.setItem(WEIGHT_KEY,JSON.stringify(x));renderWeights()}
