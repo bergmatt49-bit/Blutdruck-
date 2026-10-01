@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#1565c0">
-<title>Blutdruck</title>
+<meta name="theme-color" content="#0b84f3">
+<title>DruckWert – Blutdruck-Tagebuch</title>
 <link rel="manifest" href="./manifest.json">
 <link rel="icon" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -53,10 +53,34 @@ input,select,textarea{width:100%;padding:14px;margin:6px 0;border:1px solid #ccd
 .welcome-icon{text-align:center;font-size:58px}.welcome-card h2{text-align:center;margin:5px 0}.welcome-card .welcome-points{line-height:1.65;color:var(--muted);font-size:14px}
 .info-box{background:var(--bg);border-radius:13px;padding:12px;margin:8px 0;font-size:13px;line-height:1.55}
 .install-hint{font-size:12px;color:var(--muted);line-height:1.45;margin-top:8px}
+
+/* DruckWert Design */
+:root{--bg:#f3f7fb;--card:#fff;--text:#101828;--muted:#667085;--primary:#0b84f3;--primary2:#0667d8;--soft:#edf4fb;--line:#e4ebf3;--danger:#d92d20;--dangerbg:#fff0ee}
+body.dark{--bg:#07131f;--card:#0e2132;--text:#f5f8fc;--muted:#9db0c3;--soft:#142d43;--line:#1d3b55;--dangerbg:#3a1c22}
+body{font-family:Arial,sans-serif;background:linear-gradient(180deg,var(--bg),var(--bg));}
+header{background:rgba(255,255,255,.94);color:var(--text);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--line);box-shadow:0 4px 18px rgba(15,45,75,.06);padding:13px 16px}
+body.dark header{background:rgba(7,19,31,.94)}
+.brand{display:flex;align-items:center;justify-content:center;gap:8px}.brand h1{font-size:23px;letter-spacing:-.5px}.brand h1 span{color:var(--primary)}
+.brand-mark{display:grid;place-items:center;width:31px;height:31px;border-radius:10px;color:#fff;font-weight:900;font-size:11px;background:linear-gradient(145deg,#28b8ff,#0877ef 58%,#0759c8);box-shadow:0 5px 13px rgba(11,132,243,.28);border:2px solid rgba(255,255,255,.75)}
+header p{color:var(--muted);opacity:1}#themeButton{background:var(--soft);color:var(--text)}
+main{max-width:680px}.card{border:1px solid var(--line);box-shadow:0 7px 22px rgba(16,45,75,.055);border-radius:21px}
+.primary{background:linear-gradient(135deg,#12a0ff,#0879ed 55%,#0667d8);box-shadow:0 7px 16px rgba(11,132,243,.22);border-radius:14px}
+.secondary{border:1px solid var(--line);border-radius:14px}
+.hero .bp{font-size:40px;letter-spacing:-1.5px}.hero .pulsebig{font-size:29px}
+.quick{gap:10px}.quick div,.stat,.summary-box,.substat,.compare-box,.mini-box,.setting-row,.series-box,.measure-guide,.info-box{border:1px solid var(--line)}
+.quick div{padding:14px 8px}.quick strong{font-size:21px}
+.measurement{border:1px solid var(--line);border-left:4px solid var(--primary);box-shadow:0 4px 14px rgba(16,45,75,.045)}
+input,select,textarea{border-color:var(--line);background:var(--card);outline:none}input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(11,132,243,.10)}
+.period-button.active,.filter.active{background:linear-gradient(135deg,#12a0ff,#0879ed);box-shadow:0 4px 10px rgba(11,132,243,.18)}
+.bottom-nav{height:74px;background:rgba(255,255,255,.96);border-top:1px solid var(--line);box-shadow:0 -6px 24px rgba(15,45,75,.08);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px)}
+body.dark .bottom-nav{background:rgba(7,19,31,.97)}.nav-btn{color:var(--muted)}.nav-btn.active{background:transparent;color:var(--primary);margin:0;border-radius:0}.nav-btn.active span{transform:translateY(-1px)}
+.more-category{border-radius:17px}.more-category-title{padding:15px}.menu-item{padding:15px 4px}
+.welcome-card{border:1px solid var(--line);border-radius:26px}.welcome-icon{font-size:0}.welcome-icon:after{content:"DW";display:grid;place-items:center;margin:4px auto 14px;width:82px;height:82px;border-radius:25px;background:linear-gradient(145deg,#2cc1ff,#0b84f3 58%,#0759c8);color:#fff;font-size:25px;font-weight:900;box-shadow:0 12px 28px rgba(11,132,243,.28);border:4px solid rgba(255,255,255,.8)}
+@media(max-width:430px){main{margin-top:12px}.card{border-radius:18px}.hero .bp{font-size:35px}}
 </style>
 </head>
 <body>
-<header><button id="themeButton" onclick="toggleTheme()">🌙</button><h1>💓 Blutdruck</h1><p id="headerSub">Mein Überblick</p></header>
+<header><button id="themeButton" onclick="toggleTheme()">🌙</button><div class="brand"><span class="brand-mark">DW</span><h1>Druck<span>Wert</span></h1></div><p id="headerSub">Dein Blutdruck im Blick</p></header>
 <main>
 <section id="page-home" class="page active">
 <div class="card"><h2>Letzte Messung</h2><div id="latest"></div></div>
@@ -135,12 +159,12 @@ input,select,textarea{width:100%;padding:14px;margin:6px 0;border:1px solid #ccd
 <button class="menu-item" onclick="toggleExtra('privacyInfoBox')"><span class="menu-icon">🔐</span><span class="menu-text"><strong>Datenschutz & Hinweise</strong><small>Speicherung, Backup und medizinischer Hinweis</small></span><span class="arrow">›</span></button>
 <div id="privacyInfoBox" class="section-hidden"><div class="info-box"><b>Datenschutz</b><br>Die in dieser App eingegebenen Messungen werden lokal im Browser bzw. auf diesem Gerät gespeichert. Die App überträgt diese Tagebuchdaten nicht automatisch an ein Benutzerkonto oder einen Cloud-Dienst. Export- und Backup-Dateien können Gesundheitsdaten im Klartext enthalten und sollten geschützt aufbewahrt werden.</div><div class="info-box"><b>Medizinischer Hinweis</b><br>Diese App ist ein persönliches Dokumentationswerkzeug. Sie stellt keine Diagnose, ersetzt keine ärztliche Untersuchung und gibt keine individuelle Therapieempfehlung.</div></div>
 <button class="menu-item" onclick="toggleExtra('appInfoBox')"><span class="menu-icon">ℹ️</span><span class="menu-text"><strong>Über die App</strong><small>Version, Installation und Zweck</small></span><span class="arrow">›</span></button>
-<div id="appInfoBox" class="section-hidden"><div class="info-box"><b>Blutdruck – Version 1.0.0</b><br>Persönliches Blutdruck-Tagebuch mit Messreihen, Verlauf, Auswertungen, Gewicht, Medikamenten-Dokumentation, Arzt-Bericht und Backup.</div><button class="secondary" onclick="showWelcome(true)">Einführung erneut anzeigen</button></div>
+<div id="appInfoBox" class="section-hidden"><div class="info-box"><b>DruckWert – Version 1.0.0</b><br>Persönliches Blutdruck-Tagebuch mit Messreihen, Verlauf, Auswertungen, Gewicht, Medikamenten-Dokumentation, Arzt-Bericht und Backup.</div><button class="secondary" onclick="showWelcome(true)">Einführung erneut anzeigen</button></div>
 <button id="installMenuButton" class="menu-item" onclick="installApp()"><span class="menu-icon">📲</span><span class="menu-text"><strong>App installieren</strong><small id="installMenuText">Auf diesem Gerät installieren</small></span><span class="arrow">›</span></button>
 </div></div></div></div></section>
 </main>
 
-<div id="welcomeOverlay" class="welcome-overlay"><div class="welcome-card"><div class="welcome-icon">💓</div><h2>Willkommen bei Blutdruck</h2><p style="text-align:center;color:var(--muted)">Dein persönliches Blutdruck-Tagebuch</p><div class="welcome-points">✓ Blutdruck und Puls dokumentieren<br>✓ Messreihen und Durchschnittswerte erfassen<br>✓ Verlauf, Kalender und Auswertungen ansehen<br>✓ Medikamente, Symptome und Gewicht dokumentieren<br>✓ Arzt-Bericht erstellen und Daten sichern</div><div class="info-box"><b>🔐 Deine Daten</b><br>Deine Tagebuchdaten bleiben lokal auf diesem Gerät. Erstelle regelmäßig ein Backup, besonders vor einem Gerätewechsel.</div><div class="info-box"><b>🩺 Wichtig</b><br>Die App dient zur Dokumentation und ersetzt keine medizinische Diagnose oder ärztliche Beratung.</div><button class="primary" onclick="finishWelcome()">Los geht's</button><button id="welcomeInstallButton" class="secondary" onclick="installApp()">📲 App installieren</button><div id="welcomeInstallHint" class="install-hint"></div></div></div><nav class="bottom-nav"><button class="nav-btn active" data-page="home" onclick="showPage('home',this)"><span>⌂</span>Start</button><button class="nav-btn" data-page="add" onclick="showPage('add',this)"><span>＋</span>Messung</button><button class="nav-btn" data-page="analysis" onclick="showPage('analysis',this)"><span>▥</span>Auswertung</button><button class="nav-btn" data-page="history" onclick="showPage('history',this)"><span>☷</span>Verlauf</button><button class="nav-btn" data-page="more" onclick="showPage('more',this)"><span>⚙</span>Mehr</button></nav><div id="undoToast" class="undo-toast"><span>Messung gelöscht.</span><button onclick="undoDelete()">↩️ Rückgängig</button></div><div id="privacyScreen" style="display:none;position:fixed;inset:0;background:#10141c;color:white;z-index:9999;align-items:center;justify-content:center;text-align:center;padding:30px"><div><div style="font-size:54px">🔐</div><h2>Blutdruck-App geschützt</h2><p>Tippe auf Entsperren, um die Inhalte wieder anzuzeigen.</p><button class="primary" onclick="togglePrivacyScreen()">Entsperren</button></div></div>
+<div id="welcomeOverlay" class="welcome-overlay"><div class="welcome-card"><div class="welcome-icon">💓</div><h2>Willkommen bei DruckWert</h2><p style="text-align:center;color:var(--muted)">Dein persönliches Blutdruck-Tagebuch</p><div class="welcome-points">✓ Blutdruck und Puls dokumentieren<br>✓ Messreihen und Durchschnittswerte erfassen<br>✓ Verlauf, Kalender und Auswertungen ansehen<br>✓ Medikamente, Symptome und Gewicht dokumentieren<br>✓ Arzt-Bericht erstellen und Daten sichern</div><div class="info-box"><b>🔐 Deine Daten</b><br>Deine Tagebuchdaten bleiben lokal auf diesem Gerät. Erstelle regelmäßig ein Backup, besonders vor einem Gerätewechsel.</div><div class="info-box"><b>🩺 Wichtig</b><br>Die App dient zur Dokumentation und ersetzt keine medizinische Diagnose oder ärztliche Beratung.</div><button class="primary" onclick="finishWelcome()">Los geht's</button><button id="welcomeInstallButton" class="secondary" onclick="installApp()">📲 App installieren</button><div id="welcomeInstallHint" class="install-hint"></div></div></div><nav class="bottom-nav"><button class="nav-btn active" data-page="home" onclick="showPage('home',this)"><span>⌂</span>Start</button><button class="nav-btn" data-page="add" onclick="showPage('add',this)"><span>＋</span>Messung</button><button class="nav-btn" data-page="analysis" onclick="showPage('analysis',this)"><span>▥</span>Auswertung</button><button class="nav-btn" data-page="history" onclick="showPage('history',this)"><span>☷</span>Verlauf</button><button class="nav-btn" data-page="more" onclick="showPage('more',this)"><span>⚙</span>Mehr</button></nav><div id="undoToast" class="undo-toast"><span>Messung gelöscht.</span><button onclick="undoDelete()">↩️ Rückgängig</button></div><div id="privacyScreen" style="display:none;position:fixed;inset:0;background:#10141c;color:white;z-index:9999;align-items:center;justify-content:center;text-align:center;padding:30px"><div><div style="font-size:54px">🔐</div><h2>Blutdruck-App geschützt</h2><p>Tippe auf Entsperren, um die Inhalte wieder anzuzeigen.</p><button class="primary" onclick="togglePrivacyScreen()">Entsperren</button></div></div>
 <div id="pdfSheet" class="pdf-sheet"></div>
 <script>
 const STORAGE_KEY="bloodPressureMeasurements",WEIGHT_KEY="bloodPressureWeights",REMINDER_KEY="bloodPressureReminders",PROFILE_KEY="bloodPressureProfile",MEDLIST_KEY="bloodPressureMedicationList",VISIT_KEY="bloodPressureDoctorVisits",CUSTOMSYM_KEY="bloodPressureCustomSymptoms",BACKUP_KEY="bloodPressureLastBackup",WELCOME_KEY="bloodPressureWelcomeV1";let deferredInstallPrompt=null;let editingIndex=null,period="all",customFrom=null,customTo=null,historyFilter="all",historyDate=null,calendarMonth=new Date(),chartPoints={blood:[],pulse:[]},seriesReadings=[],seriesTimerId=null,lastDeleted=null;
@@ -211,6 +235,30 @@ table{width:100%;border-collapse:collapse;font-size:8.5px}thead{display:table-he
 .welcome-icon{text-align:center;font-size:58px}.welcome-card h2{text-align:center;margin:5px 0}.welcome-card .welcome-points{line-height:1.65;color:var(--muted);font-size:14px}
 .info-box{background:var(--bg);border-radius:13px;padding:12px;margin:8px 0;font-size:13px;line-height:1.55}
 .install-hint{font-size:12px;color:var(--muted);line-height:1.45;margin-top:8px}
+
+/* DruckWert Design */
+:root{--bg:#f3f7fb;--card:#fff;--text:#101828;--muted:#667085;--primary:#0b84f3;--primary2:#0667d8;--soft:#edf4fb;--line:#e4ebf3;--danger:#d92d20;--dangerbg:#fff0ee}
+body.dark{--bg:#07131f;--card:#0e2132;--text:#f5f8fc;--muted:#9db0c3;--soft:#142d43;--line:#1d3b55;--dangerbg:#3a1c22}
+body{font-family:Arial,sans-serif;background:linear-gradient(180deg,var(--bg),var(--bg));}
+header{background:rgba(255,255,255,.94);color:var(--text);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--line);box-shadow:0 4px 18px rgba(15,45,75,.06);padding:13px 16px}
+body.dark header{background:rgba(7,19,31,.94)}
+.brand{display:flex;align-items:center;justify-content:center;gap:8px}.brand h1{font-size:23px;letter-spacing:-.5px}.brand h1 span{color:var(--primary)}
+.brand-mark{display:grid;place-items:center;width:31px;height:31px;border-radius:10px;color:#fff;font-weight:900;font-size:11px;background:linear-gradient(145deg,#28b8ff,#0877ef 58%,#0759c8);box-shadow:0 5px 13px rgba(11,132,243,.28);border:2px solid rgba(255,255,255,.75)}
+header p{color:var(--muted);opacity:1}#themeButton{background:var(--soft);color:var(--text)}
+main{max-width:680px}.card{border:1px solid var(--line);box-shadow:0 7px 22px rgba(16,45,75,.055);border-radius:21px}
+.primary{background:linear-gradient(135deg,#12a0ff,#0879ed 55%,#0667d8);box-shadow:0 7px 16px rgba(11,132,243,.22);border-radius:14px}
+.secondary{border:1px solid var(--line);border-radius:14px}
+.hero .bp{font-size:40px;letter-spacing:-1.5px}.hero .pulsebig{font-size:29px}
+.quick{gap:10px}.quick div,.stat,.summary-box,.substat,.compare-box,.mini-box,.setting-row,.series-box,.measure-guide,.info-box{border:1px solid var(--line)}
+.quick div{padding:14px 8px}.quick strong{font-size:21px}
+.measurement{border:1px solid var(--line);border-left:4px solid var(--primary);box-shadow:0 4px 14px rgba(16,45,75,.045)}
+input,select,textarea{border-color:var(--line);background:var(--card);outline:none}input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(11,132,243,.10)}
+.period-button.active,.filter.active{background:linear-gradient(135deg,#12a0ff,#0879ed);box-shadow:0 4px 10px rgba(11,132,243,.18)}
+.bottom-nav{height:74px;background:rgba(255,255,255,.96);border-top:1px solid var(--line);box-shadow:0 -6px 24px rgba(15,45,75,.08);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px)}
+body.dark .bottom-nav{background:rgba(7,19,31,.97)}.nav-btn{color:var(--muted)}.nav-btn.active{background:transparent;color:var(--primary);margin:0;border-radius:0}.nav-btn.active span{transform:translateY(-1px)}
+.more-category{border-radius:17px}.more-category-title{padding:15px}.menu-item{padding:15px 4px}
+.welcome-card{border:1px solid var(--line);border-radius:26px}.welcome-icon{font-size:0}.welcome-icon:after{content:"DW";display:grid;place-items:center;margin:4px auto 14px;width:82px;height:82px;border-radius:25px;background:linear-gradient(145deg,#2cc1ff,#0b84f3 58%,#0759c8);color:#fff;font-size:25px;font-weight:900;box-shadow:0 12px 28px rgba(11,132,243,.28);border:4px solid rgba(255,255,255,.8)}
+@media(max-width:430px){main{margin-top:12px}.card{border-radius:18px}.hero .bp{font-size:35px}}
 </style></head><body>
 <h1>Blutdruck-Tagebuch – Arzt-Bericht</h1>
 <div>${p.name?`<b>${esc(p.name)}</b>`:""}${p.birth?` · Geburtsdatum: ${new Date(p.birth+"T00:00").toLocaleDateString("de-DE")}`:""}</div>
