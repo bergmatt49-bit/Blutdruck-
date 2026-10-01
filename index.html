@@ -77,6 +77,45 @@ body.dark .bottom-nav{background:rgba(7,19,31,.97)}.nav-btn{color:var(--muted)}.
 .more-category{border-radius:17px}.more-category-title{padding:15px}.menu-item{padding:15px 4px}
 .welcome-card{border:1px solid var(--line);border-radius:26px}.welcome-icon{font-size:0}.welcome-icon:after{content:"DW";display:grid;place-items:center;margin:4px auto 14px;width:82px;height:82px;border-radius:25px;background:linear-gradient(145deg,#2cc1ff,#0b84f3 58%,#0759c8);color:#fff;font-size:25px;font-weight:900;box-shadow:0 12px 28px rgba(11,132,243,.28);border:4px solid rgba(255,255,255,.8)}
 @media(max-width:430px){main{margin-top:12px}.card{border-radius:18px}.hero .bp{font-size:35px}}
+
+/* DruckWert Mockup-Matching UI */
+body{background:#f4f8fc}
+body.dark{background:#07131f}
+header{position:sticky;top:0;z-index:40;height:auto;padding:12px 16px 10px}
+header .brand{justify-content:center}
+header #headerSub{display:none}
+main{padding:0 12px 98px;max-width:520px;margin:12px auto 0}
+.card{padding:16px;margin-bottom:12px;border-radius:18px}
+.card h2{font-size:17px;margin-bottom:12px;letter-spacing:-.2px}
+.hero{padding:15px 14px 16px}
+.hero:before{content:"Letzte Messung";display:block;font-size:14px;font-weight:800;margin-bottom:2px}
+.hero .date{font-size:12px;color:var(--muted);margin-bottom:10px}
+.hero .values,.hero .value-row{display:grid!important;grid-template-columns:1fr 1fr 1fr;gap:0}
+.hero .bp,.hero .pulsebig{font-size:34px!important;line-height:1;font-weight:900;text-align:center;padding:8px 4px 3px;border-right:1px solid var(--line)}
+.hero .pulsebig{border-right:0}
+.hero small,.hero .unit{font-size:11px;color:var(--muted)}
+.quick{display:grid!important;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.quick div{min-height:82px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:13px;border-radius:15px;background:var(--card);box-shadow:0 5px 16px rgba(16,45,75,.055)}
+.quick div:nth-child(1):before{content:"📊";font-size:22px}.quick div:nth-child(2):before{content:"📅";font-size:22px}.quick div:nth-child(3):before{content:"📈";font-size:22px}.quick div:nth-child(4):before{content:"💊";font-size:22px}
+.quick strong{font-size:15px;margin-top:5px}.quick small{font-size:11px;color:var(--muted)}
+.primary{min-height:48px;font-size:15px;font-weight:800}
+.form-label{font-size:12px;font-weight:800;margin-top:13px}
+input,select,textarea{border-radius:12px;padding:12px}
+.symptoms,.filters{gap:7px}.check,.filter,.period-button{border-radius:999px!important;padding:9px 11px;border:1px solid var(--line);background:var(--soft)}
+.series-box{text-align:center;border-radius:18px}.timer-big{width:190px;height:190px;margin:14px auto;display:grid;place-items:center;border-radius:50%;font-size:42px;background:conic-gradient(var(--primary) 0 78%,#dce5ee 78% 100%);position:relative}.timer-big:before{content:"";position:absolute;inset:13px;border-radius:50%;background:var(--card)}.timer-big{isolation:isolate}.timer-big::after{content:"";}.timer-big{color:var(--text)}.timer-big{font-weight:900}.timer-big{line-height:190px}.timer-big{overflow:hidden}.timer-big{box-shadow:inset 0 0 0 1px var(--line)}.timer-big{z-index:0}.timer-big{background-color:var(--card)}.timer-big{font-variant-numeric:tabular-nums}.timer-big{ text-shadow:0 0 0 var(--text)}.timer-big{ }
+#seriesTimer{position:relative}#seriesTimer{color:transparent}#seriesTimer:after{content:attr(data-time);color:var(--text);position:absolute;inset:0;display:grid;place-items:center;z-index:2}
+.chart-wrap{border:1px solid var(--line);border-radius:15px;padding:8px;background:var(--card)}
+canvas{border-radius:12px}
+.calendar{border:1px solid var(--line);border-radius:16px;padding:9px}.calendar-day{border-radius:50%}.calendar-day.selected{background:var(--primary);color:#fff}
+.measurement{border-left:0;padding:13px 12px;border-radius:14px}.measurement strong{font-size:16px}
+.stats,.summary-grid{gap:8px}.stat,.summary-box,.substat,.compare-box,.mini-box{border-radius:14px;background:var(--card)}
+.more-category{border:1px solid var(--line);box-shadow:none;background:var(--card);margin-bottom:8px}
+.more-category-title{font-weight:800}
+.bottom-nav{left:0;right:0;bottom:0;max-width:none;border-radius:0;padding:5px max(6px,calc((100vw - 520px)/2));height:68px}
+.nav-btn{font-size:10px;gap:2px}.nav-btn span{font-size:20px}
+.nav-btn.active{color:var(--primary);font-weight:800}
+body.dark .card,body.dark .quick div{box-shadow:0 5px 18px rgba(0,0,0,.18)}
+@media(min-width:700px){main{max-width:560px}}
 </style>
 </head>
 <body>
@@ -164,7 +203,7 @@ body.dark .bottom-nav{background:rgba(7,19,31,.97)}.nav-btn{color:var(--muted)}.
 </div></div></div></div></section>
 </main>
 
-<div id="welcomeOverlay" class="welcome-overlay"><div class="welcome-card"><div class="welcome-icon">💓</div><h2>Willkommen bei DruckWert</h2><p style="text-align:center;color:var(--muted)">Dein persönliches Blutdruck-Tagebuch</p><div class="welcome-points">✓ Blutdruck und Puls dokumentieren<br>✓ Messreihen und Durchschnittswerte erfassen<br>✓ Verlauf, Kalender und Auswertungen ansehen<br>✓ Medikamente, Symptome und Gewicht dokumentieren<br>✓ Arzt-Bericht erstellen und Daten sichern</div><div class="info-box"><b>🔐 Deine Daten</b><br>Deine Tagebuchdaten bleiben lokal auf diesem Gerät. Erstelle regelmäßig ein Backup, besonders vor einem Gerätewechsel.</div><div class="info-box"><b>🩺 Wichtig</b><br>Die App dient zur Dokumentation und ersetzt keine medizinische Diagnose oder ärztliche Beratung.</div><button class="primary" onclick="finishWelcome()">Los geht's</button><button id="welcomeInstallButton" class="secondary" onclick="installApp()">📲 App installieren</button><div id="welcomeInstallHint" class="install-hint"></div></div></div><nav class="bottom-nav"><button class="nav-btn active" data-page="home" onclick="showPage('home',this)"><span>⌂</span>Start</button><button class="nav-btn" data-page="add" onclick="showPage('add',this)"><span>＋</span>Messung</button><button class="nav-btn" data-page="analysis" onclick="showPage('analysis',this)"><span>▥</span>Auswertung</button><button class="nav-btn" data-page="history" onclick="showPage('history',this)"><span>☷</span>Verlauf</button><button class="nav-btn" data-page="more" onclick="showPage('more',this)"><span>⚙</span>Mehr</button></nav><div id="undoToast" class="undo-toast"><span>Messung gelöscht.</span><button onclick="undoDelete()">↩️ Rückgängig</button></div><div id="privacyScreen" style="display:none;position:fixed;inset:0;background:#10141c;color:white;z-index:9999;align-items:center;justify-content:center;text-align:center;padding:30px"><div><div style="font-size:54px">🔐</div><h2>Blutdruck-App geschützt</h2><p>Tippe auf Entsperren, um die Inhalte wieder anzuzeigen.</p><button class="primary" onclick="togglePrivacyScreen()">Entsperren</button></div></div>
+<div id="welcomeOverlay" class="welcome-overlay"><div class="welcome-card"><div class="welcome-icon">💓</div><h2>Willkommen bei DruckWert</h2><p style="text-align:center;color:var(--muted)">Dein Blutdruck im Blick</p><div class="welcome-points">✓ Blutdruck und Puls dokumentieren<br>✓ Messreihen und Durchschnittswerte erfassen<br>✓ Verlauf, Kalender und Auswertungen ansehen<br>✓ Medikamente, Symptome und Gewicht dokumentieren<br>✓ Arzt-Bericht erstellen und Daten sichern</div><div class="info-box"><b>🔐 Deine Daten</b><br>Deine Tagebuchdaten bleiben lokal auf diesem Gerät. Erstelle regelmäßig ein Backup, besonders vor einem Gerätewechsel.</div><div class="info-box"><b>🩺 Wichtig</b><br>Die App dient zur Dokumentation und ersetzt keine medizinische Diagnose oder ärztliche Beratung.</div><button class="primary" onclick="finishWelcome()">Los geht's</button><button id="welcomeInstallButton" class="secondary" onclick="installApp()">📲 App installieren</button><div id="welcomeInstallHint" class="install-hint"></div></div></div><nav class="bottom-nav"><button class="nav-btn active" data-page="home" onclick="showPage('home',this)"><span>⌂</span>Start</button><button class="nav-btn" data-page="add" onclick="showPage('add',this)"><span>＋</span>Messung</button><button class="nav-btn" data-page="analysis" onclick="showPage('analysis',this)"><span>▥</span>Auswertung</button><button class="nav-btn" data-page="history" onclick="showPage('history',this)"><span>☷</span>Verlauf</button><button class="nav-btn" data-page="more" onclick="showPage('more',this)"><span>⚙</span>Mehr</button></nav><div id="undoToast" class="undo-toast"><span>Messung gelöscht.</span><button onclick="undoDelete()">↩️ Rückgängig</button></div><div id="privacyScreen" style="display:none;position:fixed;inset:0;background:#10141c;color:white;z-index:9999;align-items:center;justify-content:center;text-align:center;padding:30px"><div><div style="font-size:54px">🔐</div><h2>Blutdruck-App geschützt</h2><p>Tippe auf Entsperren, um die Inhalte wieder anzuzeigen.</p><button class="primary" onclick="togglePrivacyScreen()">Entsperren</button></div></div>
 <div id="pdfSheet" class="pdf-sheet"></div>
 <script>
 const STORAGE_KEY="bloodPressureMeasurements",WEIGHT_KEY="bloodPressureWeights",REMINDER_KEY="bloodPressureReminders",PROFILE_KEY="bloodPressureProfile",MEDLIST_KEY="bloodPressureMedicationList",VISIT_KEY="bloodPressureDoctorVisits",CUSTOMSYM_KEY="bloodPressureCustomSymptoms",BACKUP_KEY="bloodPressureLastBackup",WELCOME_KEY="bloodPressureWelcomeV1";let deferredInstallPrompt=null;let editingIndex=null,period="all",customFrom=null,customTo=null,historyFilter="all",historyDate=null,calendarMonth=new Date(),chartPoints={blood:[],pulse:[]},seriesReadings=[],seriesTimerId=null,lastDeleted=null;
@@ -259,6 +298,45 @@ body.dark .bottom-nav{background:rgba(7,19,31,.97)}.nav-btn{color:var(--muted)}.
 .more-category{border-radius:17px}.more-category-title{padding:15px}.menu-item{padding:15px 4px}
 .welcome-card{border:1px solid var(--line);border-radius:26px}.welcome-icon{font-size:0}.welcome-icon:after{content:"DW";display:grid;place-items:center;margin:4px auto 14px;width:82px;height:82px;border-radius:25px;background:linear-gradient(145deg,#2cc1ff,#0b84f3 58%,#0759c8);color:#fff;font-size:25px;font-weight:900;box-shadow:0 12px 28px rgba(11,132,243,.28);border:4px solid rgba(255,255,255,.8)}
 @media(max-width:430px){main{margin-top:12px}.card{border-radius:18px}.hero .bp{font-size:35px}}
+
+/* DruckWert Mockup-Matching UI */
+body{background:#f4f8fc}
+body.dark{background:#07131f}
+header{position:sticky;top:0;z-index:40;height:auto;padding:12px 16px 10px}
+header .brand{justify-content:center}
+header #headerSub{display:none}
+main{padding:0 12px 98px;max-width:520px;margin:12px auto 0}
+.card{padding:16px;margin-bottom:12px;border-radius:18px}
+.card h2{font-size:17px;margin-bottom:12px;letter-spacing:-.2px}
+.hero{padding:15px 14px 16px}
+.hero:before{content:"Letzte Messung";display:block;font-size:14px;font-weight:800;margin-bottom:2px}
+.hero .date{font-size:12px;color:var(--muted);margin-bottom:10px}
+.hero .values,.hero .value-row{display:grid!important;grid-template-columns:1fr 1fr 1fr;gap:0}
+.hero .bp,.hero .pulsebig{font-size:34px!important;line-height:1;font-weight:900;text-align:center;padding:8px 4px 3px;border-right:1px solid var(--line)}
+.hero .pulsebig{border-right:0}
+.hero small,.hero .unit{font-size:11px;color:var(--muted)}
+.quick{display:grid!important;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.quick div{min-height:82px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:13px;border-radius:15px;background:var(--card);box-shadow:0 5px 16px rgba(16,45,75,.055)}
+.quick div:nth-child(1):before{content:"📊";font-size:22px}.quick div:nth-child(2):before{content:"📅";font-size:22px}.quick div:nth-child(3):before{content:"📈";font-size:22px}.quick div:nth-child(4):before{content:"💊";font-size:22px}
+.quick strong{font-size:15px;margin-top:5px}.quick small{font-size:11px;color:var(--muted)}
+.primary{min-height:48px;font-size:15px;font-weight:800}
+.form-label{font-size:12px;font-weight:800;margin-top:13px}
+input,select,textarea{border-radius:12px;padding:12px}
+.symptoms,.filters{gap:7px}.check,.filter,.period-button{border-radius:999px!important;padding:9px 11px;border:1px solid var(--line);background:var(--soft)}
+.series-box{text-align:center;border-radius:18px}.timer-big{width:190px;height:190px;margin:14px auto;display:grid;place-items:center;border-radius:50%;font-size:42px;background:conic-gradient(var(--primary) 0 78%,#dce5ee 78% 100%);position:relative}.timer-big:before{content:"";position:absolute;inset:13px;border-radius:50%;background:var(--card)}.timer-big{isolation:isolate}.timer-big::after{content:"";}.timer-big{color:var(--text)}.timer-big{font-weight:900}.timer-big{line-height:190px}.timer-big{overflow:hidden}.timer-big{box-shadow:inset 0 0 0 1px var(--line)}.timer-big{z-index:0}.timer-big{background-color:var(--card)}.timer-big{font-variant-numeric:tabular-nums}.timer-big{ text-shadow:0 0 0 var(--text)}.timer-big{ }
+#seriesTimer{position:relative}#seriesTimer{color:transparent}#seriesTimer:after{content:attr(data-time);color:var(--text);position:absolute;inset:0;display:grid;place-items:center;z-index:2}
+.chart-wrap{border:1px solid var(--line);border-radius:15px;padding:8px;background:var(--card)}
+canvas{border-radius:12px}
+.calendar{border:1px solid var(--line);border-radius:16px;padding:9px}.calendar-day{border-radius:50%}.calendar-day.selected{background:var(--primary);color:#fff}
+.measurement{border-left:0;padding:13px 12px;border-radius:14px}.measurement strong{font-size:16px}
+.stats,.summary-grid{gap:8px}.stat,.summary-box,.substat,.compare-box,.mini-box{border-radius:14px;background:var(--card)}
+.more-category{border:1px solid var(--line);box-shadow:none;background:var(--card);margin-bottom:8px}
+.more-category-title{font-weight:800}
+.bottom-nav{left:0;right:0;bottom:0;max-width:none;border-radius:0;padding:5px max(6px,calc((100vw - 520px)/2));height:68px}
+.nav-btn{font-size:10px;gap:2px}.nav-btn span{font-size:20px}
+.nav-btn.active{color:var(--primary);font-weight:800}
+body.dark .card,body.dark .quick div{box-shadow:0 5px 18px rgba(0,0,0,.18)}
+@media(min-width:700px){main{max-width:560px}}
 </style></head><body>
 <h1>Blutdruck-Tagebuch – Arzt-Bericht</h1>
 <div>${p.name?`<b>${esc(p.name)}</b>`:""}${p.birth?` · Geburtsdatum: ${new Date(p.birth+"T00:00").toLocaleDateString("de-DE")}`:""}</div>
@@ -313,7 +391,7 @@ function renderCustomSymptomChecks(){let box=$("dynamicSymptoms");if(!box){box=d
 function renderCombined(){const ms=getMeasurements().slice().sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(-30);if(ms.length>=2){const vals=ms.flatMap(m=>[+m.systolic,+m.diastolic]);drawChart($("combinedBP"),ms,[{key:"systolic",color:"#1565c0"},{key:"diastolic",color:"#ef6c00"}],Math.max(0,Math.min(...vals)-10),Math.max(...vals)+10,null)}const w=getWeights().slice().sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(-30);if(w.length>=2){const d=w.map(z=>({date:z.date,weight:+z.value})),vals=d.map(z=>z.weight);drawChart($("combinedWeight"),d,[{key:"weight",color:"#1565c0"}],Math.min(...vals)-2,Math.max(...vals)+2,null)}}
 function togglePrivacyScreen(){const x=$("privacyScreen");x.style.display=x.style.display==="flex"?"none":"flex"}
 function renderBackupStatus(){const d=localStorage.getItem(BACKUP_KEY);const x=$("backupStatus");if(x)x.textContent=d?"Letztes Backup: "+new Date(d).toLocaleString("de-DE"):"Noch kein Backup auf diesem Gerät erstellt."}
-function startSeriesTimer(){clearInterval(seriesTimerId);let sec=60;$("seriesTimer").textContent="01:00";seriesTimerId=setInterval(()=>{sec--;$("seriesTimer").textContent=String(Math.floor(sec/60)).padStart(2,"0")+":"+String(sec%60).padStart(2,"0");if(sec<=0){clearInterval(seriesTimerId);seriesTimerId=null;$("seriesTimer").textContent="Bereit ✓";if(navigator.vibrate)navigator.vibrate([150,100,150])}},1000)}
+function startSeriesTimer(){clearInterval(seriesTimerId);let sec=60;$("seriesTimer").textContent="01:00";$("seriesTimer").dataset.time="01:00";seriesTimerId=setInterval(()=>{sec--;$("seriesTimer").textContent=String(Math.floor(sec/60)).padStart(2,"0")+":"+String(sec%60).padStart(2,"0");$("seriesTimer").dataset.time=$("seriesTimer").textContent;if(sec<=0){clearInterval(seriesTimerId);seriesTimerId=null;$("seriesTimer").textContent="Bereit ✓";$("seriesTimer").dataset.time="Bereit ✓";if(navigator.vibrate)navigator.vibrate([150,100,150])}},1000)}
 function renderBackupWarning(){const el=$("backupWarning");if(!el)return;const d=localStorage.getItem(BACKUP_KEY);if(!d){el.innerHTML='<div class="backup-warning">💾 Noch kein Backup erstellt. Eine Sicherung ist empfehlenswert.</div>';return}const days=(Date.now()-new Date(d).getTime())/86400000;el.innerHTML=days>=14?'<div class="backup-warning">⚠️ Das letzte Backup ist '+Math.floor(days)+' Tage alt.</div>':""}
 function toggleMoreCategory(btn){btn.parentElement.classList.toggle("open")}
 function toggleExtra(id){$(id).classList.toggle("section-hidden")}
