@@ -1,4 +1,4 @@
-const CACHE_NAME = "blutdruck-pwa-v23";
+const CACHE_NAME = "blutdruck-pwa-v24";
 
 const FILES_TO_CACHE = [
   "./",
